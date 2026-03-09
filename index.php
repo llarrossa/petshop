@@ -12,6 +12,16 @@ if (!isset($_SESSION['user_id'])) {
 }
 
 
+// Troca de plano (modo teste)
+if (isset($_GET['trocar_plano'])) {
+    $plano = $_GET['trocar_plano'];
+    if (array_key_exists($plano, PLANOS)) {
+        $_SESSION['plano'] = $plano;
+    }
+    header('Location: ?page=dashboard');
+    exit;
+}
+
 // Determinar qual página/controller carregar
 $page = $_GET['page'] ?? 'dashboard';
 $action = $_GET['action'] ?? 'list';

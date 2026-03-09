@@ -16,7 +16,7 @@
         <aside class="sidebar">
             <button class="sidebar-close" aria-label="Fechar menu">✕</button>
             <div class="logo">
-                <h2>🐾 Pet Shop</h2>
+                <h2>🐾 Pawfy</h2>
                 <p><?= $_SESSION['company_name'] ?? 'Sistema' ?></p>
             </div>
 
@@ -81,7 +81,26 @@
                     <h1><?= $page_title ?? 'Pet Shop SaaS' ?></h1>
                 </div>
                 <div class="user-actions">
-                    <span>Plano: <strong><?= PLANOS[$_SESSION['plano'] ?? 'completo']['nome'] ?></strong></span>
+                    <div class="plano-switcher">
+                        <span class="plano-label">Plano:</span>
+                        <div class="plano-dropdown">
+                            <button class="plano-btn">
+                                <?= PLANOS[$_SESSION['plano'] ?? 'completo']['nome'] ?> ▾
+                            </button>
+                            <div class="plano-menu">
+                                <div class="plano-menu-header">Trocar plano (teste)</div>
+                                <?php foreach (PLANOS as $key => $plano): ?>
+                                <a href="?trocar_plano=<?= $key ?>"
+                                   class="plano-menu-item <?= ($_SESSION['plano'] ?? 'completo') === $key ? 'active' : '' ?>">
+                                    <?= $plano['nome'] ?>
+                                    <?php if (($_SESSION['plano'] ?? 'completo') === $key): ?>
+                                    <span class="plano-check">✓</span>
+                                    <?php endif; ?>
+                                </a>
+                                <?php endforeach; ?>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 

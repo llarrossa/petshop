@@ -12,7 +12,7 @@ define('DB_PASS', '123456'); // Altere para sua senha do MySQL
 define('DB_CHARSET', 'utf8mb4');
 
 // Configurações da Aplicação
-define('APP_NAME', 'Pet Shop SaaS');
+define('APP_NAME', 'Pawfy');
 define('APP_VERSION', '1.0.0');
 define('APP_URL', 'http://localhost/petshop');
 
@@ -44,11 +44,11 @@ define('ITEMS_PER_PAGE', 20);
 // Planos disponíveis e seus módulos
 define('PLANOS', [
     'banho_tosa' => [
-        'nome' => 'Banho e Tosa',
+        'nome' => 'Banho & Tosa',
         'modulos' => ['agenda', 'tutores', 'pets', 'servicos', 'profissionais', 'dashboard']
     ],
     'loja' => [
-        'nome' => 'Loja / AgroPet',
+        'nome' => 'Pet Shop',
         'modulos' => ['produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'dashboard']
     ],
     'completo' => [
