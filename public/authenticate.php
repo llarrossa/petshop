@@ -34,7 +34,7 @@ if ($user && password_verify($senha, $user['senha'])) {
     $_SESSION['plano'] = $user['plano'];
     $_SESSION['perfil'] = $user['perfil'];
 
-    header('Location: ../index.php?page=dashboard');
+    header('Location: ' . APP_URL . '/index.php?page=dashboard');
     exit;
 } else {
     // Login falhou

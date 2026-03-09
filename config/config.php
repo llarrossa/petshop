@@ -4,22 +4,32 @@
  * Pet Shop SaaS - Multi-tenant
  */
 
+// Carregar configurações locais (não versionadas)
+if (file_exists(__DIR__ . '/config.local.php')) {
+    require_once __DIR__ . '/config.local.php';
+}
+
 // Configurações do Banco de Dados
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'petshop_saas');
-define('DB_USER', 'root');
-define('DB_PASS', '123456'); // Altere para sua senha do MySQL
+define('DB_HOST', DB_HOST_LOCAL ?? 'localhost');
+define('DB_NAME', DB_NAME_LOCAL ?? 'petshop_saas');
+define('DB_USER', DB_USER_LOCAL ?? 'root');
+define('DB_PASS', DB_PASS_LOCAL ?? '');
 define('DB_CHARSET', 'utf8mb4');
 
 // Configurações da Aplicação
 define('APP_NAME', 'Pawfy');
 define('APP_VERSION', '1.0.0');
-define('APP_URL', 'http://localhost/petshop');
+define('APP_URL', APP_URL_LOCAL ?? 'http://localhost/petshop');
 
 // Timezone
 date_default_timezone_set('America/Sao_Paulo');
 
 // Configurações de Sessão
+$sessionsPath = __DIR__ . '/../sessions';
+if (!is_dir($sessionsPath)) {
+    mkdir($sessionsPath, 0777, true);
+}
+ini_set('session.save_path', $sessionsPath);
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.cookie_secure', 0); // Mudar para 1 em produção com HTTPS

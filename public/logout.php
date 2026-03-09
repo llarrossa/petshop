@@ -3,8 +3,9 @@
  * Logout do Sistema
  */
 
-session_start();
+require_once __DIR__ . '/../config/config.php';
+
 session_destroy();
 
-header('Location: login.php');
+header('Location: ' . APP_URL . '/public/login.php');
 exit;

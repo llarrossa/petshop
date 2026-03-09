@@ -65,7 +65,7 @@
             <div class="user-info">
                 <p><strong><?= $_SESSION['user_name'] ?? 'Usuário' ?></strong></p>
                 <p><?= $_SESSION['user_email'] ?? '' ?></p>
-                <a href="public/logout.php" class="btn-logout">Sair</a>
+                <a href="<?= APP_URL ?>/public/logout.php" class="btn-logout">Sair</a>
             </div>
         </aside>
 

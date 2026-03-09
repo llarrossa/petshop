@@ -125,7 +125,7 @@
         </div>
 
         <?php
-        session_start();
+        require_once __DIR__ . '/../config/config.php';
 
         if (isset($_SESSION['error'])) {
             echo '<div class="alert alert-error">' . $_SESSION['error'] . '</div>';
