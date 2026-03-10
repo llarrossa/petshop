@@ -359,7 +359,7 @@
         </ul>
         <div class="nav-cta">
             <a href="public/login.php" class="nav-login">Entrar</a>
-            <a href="public/login.php" class="btn btn-orange">Começar grátis</a>
+            <a href="public/register.php" class="btn btn-orange">Começar grátis</a>
         </div>
     </div>
 </nav>
@@ -372,7 +372,7 @@
             <h1>Gestão completa para <em>Pet Shops</em></h1>
             <p>Agenda, vendas, estoque e controle financeiro em um único sistema simples de usar. Sem complicação, sem planilha, sem papel.</p>
             <div class="hero-btns">
-                <a href="public/login.php" class="btn btn-orange btn-lg">Começar teste grátis</a>
+                <a href="public/register.php" class="btn btn-orange btn-lg">Começar teste grátis</a>
                 <a href="#beneficios" class="btn btn-outline-white btn-lg">Ver demonstração</a>
             </div>
             <div class="hero-trust">✓ Sem cartão de crédito &nbsp;·&nbsp; ✓ Configuração em minutos &nbsp;·&nbsp; ✓ Cancele quando quiser</div>
@@ -448,7 +448,7 @@
         <div class="problems-solution">
             <h3>O Pawfy centraliza tudo em um único lugar.</h3>
             <p>Chega de controles separados, dados perdidos e horas desperdiçadas. Com o Pawfy, você gerencia agenda, clientes, estoque, vendas e financeiro em uma plataforma simples e feita para a rotina do pet shop.</p>
-            <a href="public/login.php" class="btn btn-orange">Quero experimentar grátis →</a>
+            <a href="public/register.php" class="btn btn-orange">Quero experimentar grátis →</a>
         </div>
     </div>
 </section>
@@ -572,7 +572,7 @@
                     <li><span class="plan-check">✓</span> Gestão de profissionais</li>
                     <li><span class="plan-check">✓</span> Dashboard gerencial</li>
                 </ul>
-                <a href="public/login.php" class="btn btn-outline-blue plan-cta">Começar agora</a>
+                <a href="public/register.php" class="btn btn-outline-blue plan-cta">Começar agora</a>
             </div>
 
             <div class="plan-card featured">
@@ -588,7 +588,7 @@
                     <li><span class="plan-check">✓</span> Relatórios de vendas</li>
                     <li><span class="plan-check">✓</span> Dashboard gerencial</li>
                 </ul>
-                <a href="public/login.php" class="btn btn-orange plan-cta">Começar agora</a>
+                <a href="public/register.php" class="btn btn-orange plan-cta">Começar agora</a>
             </div>
 
             <div class="plan-card">
@@ -603,7 +603,7 @@
                     <li><span class="plan-check">✓</span> Relatórios completos</li>
                     <li><span class="plan-check">✓</span> Suporte prioritário</li>
                 </ul>
-                <a href="public/login.php" class="btn btn-outline-blue plan-cta">Começar agora</a>
+                <a href="public/register.php" class="btn btn-outline-blue plan-cta">Começar agora</a>
             </div>
         </div>
     </div>
@@ -660,7 +660,7 @@
     <div class="container cta-final-inner">
         <h2>Pronto para organizar<br>seu pet shop?</h2>
         <p>Comece agora mesmo, sem cartão de crédito. Configure em minutos e veja a diferença no dia a dia.</p>
-        <a href="public/login.php" class="btn btn-orange btn-lg">Criar conta grátis</a>
+        <a href="public/register.php" class="btn btn-orange btn-lg">Criar conta grátis</a>
         <p class="cta-trust">✓ Grátis para começar &nbsp;·&nbsp; ✓ Sem burocracia &nbsp;·&nbsp; ✓ Cancele quando quiser</p>
     </div>
 </section>
@@ -685,6 +685,7 @@
                     <li><a href="#planos">Planos</a></li>
                     <li><a href="#demo">Demonstração</a></li>
                     <li><a href="public/login.php">Entrar</a></li>
+                    <li><a href="public/register.php">Criar conta</a></li>
                 </ul>
             </div>
             <div class="footer-col">

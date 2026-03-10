@@ -1,157 +1,195 @@
+<?php
+require_once __DIR__ . '/../config/config.php';
+
+// Usuário já logado → redirecionar para o dashboard
+if (isset($_SESSION['user_id'])) {
+    header('Location: ' . APP_URL . '/index.php?page=dashboard');
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login - Pet Shop SaaS</title>
+    <title>Entrar — Pawfy</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            height: 100vh;
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 55%, #1D4ED8 100%);
+            min-height: 100vh;
             display: flex;
-            justify-content: center;
+            flex-direction: column;
             align-items: center;
+            justify-content: center;
+            padding: 32px 16px;
         }
 
-        .login-container {
-            background: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        .card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 24px 64px rgba(0,0,0,.25);
             width: 100%;
             max-width: 400px;
+            padding: 40px 44px;
         }
 
         .logo {
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 28px;
         }
 
-        .logo h1 {
-            font-size: 32px;
-            color: #4F46E5;
-            margin-bottom: 5px;
+        .logo a {
+            text-decoration: none;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #2563EB;
+            letter-spacing: -.02em;
         }
+
+        .logo a span { color: #F97316; }
 
         .logo p {
-            color: #6B7280;
-            font-size: 14px;
+            color: #64748B;
+            font-size: 0.88rem;
+            margin-top: 4px;
         }
 
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 16px;
         }
 
-        .form-group label {
+        label {
             display: block;
-            margin-bottom: 8px;
+            font-size: 0.82rem;
+            font-weight: 600;
             color: #374151;
-            font-weight: 500;
+            margin-bottom: 5px;
         }
 
         .form-control {
             width: 100%;
-            padding: 12px 15px;
-            border: 1px solid #E5E7EB;
-            border-radius: 6px;
-            font-size: 14px;
-            transition: all 0.3s;
+            padding: 11px 13px;
+            border: 1px solid #D1D5DB;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            color: #1E293B;
+            background: #FAFAFA;
+            transition: border-color .2s, box-shadow .2s;
         }
 
         .form-control:focus {
             outline: none;
-            border-color: #4F46E5;
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1);
+            border-color: #2563EB;
+            box-shadow: 0 0 0 3px rgba(37,99,235,.12);
+            background: #fff;
         }
 
         .btn-login {
             width: 100%;
-            padding: 12px;
-            background-color: #4F46E5;
-            color: white;
+            padding: 13px;
+            background: #2563EB;
+            color: #fff;
             border: none;
-            border-radius: 6px;
-            font-size: 16px;
-            font-weight: 600;
+            border-radius: 10px;
+            font-size: 1rem;
+            font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s;
+            margin-top: 4px;
+            transition: background .18s, transform .18s, box-shadow .18s;
+            letter-spacing: .01em;
         }
 
         .btn-login:hover {
-            background-color: #4338CA;
+            background: #1D4ED8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(37,99,235,.3);
         }
 
         .alert {
             padding: 12px 15px;
-            border-radius: 6px;
-            margin-bottom: 20px;
-            font-size: 14px;
+            border-radius: 8px;
+            margin-bottom: 18px;
+            font-size: 0.85rem;
         }
 
         .alert-error {
-            background-color: #FEE2E2;
-            color: #991B1B;
+            background: #FEF2F2;
             border-left: 4px solid #EF4444;
+            color: #991B1B;
         }
 
-        .info-box {
-            margin-top: 30px;
-            padding: 15px;
-            background-color: #F3F4F6;
-            border-radius: 6px;
-            font-size: 13px;
-            color: #6B7280;
+        .card-footer {
+            text-align: center;
+            margin-top: 20px;
+            padding-top: 16px;
+            border-top: 1px solid #E2E8F0;
+            font-size: 0.85rem;
+            color: #64748B;
         }
 
-        .info-box strong {
+        .card-footer a {
+            color: #2563EB;
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .card-footer a:hover { text-decoration: underline; }
+
+        .back-link {
             display: block;
-            margin-bottom: 10px;
-            color: #374151;
+            text-align: center;
+            margin-top: 20px;
+            font-size: 0.82rem;
+            color: rgba(255,255,255,.7);
+            text-decoration: none;
+            transition: color .15s;
+        }
+
+        .back-link:hover { color: #fff; }
+
+        @media (max-width: 480px) {
+            .card { padding: 28px 20px; }
         }
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="card">
         <div class="logo">
-            <h1>🐾 Pet Shop SaaS</h1>
-            <p>Sistema de Gestão para Pet Shops</p>
+            <a href="<?= APP_URL ?>">🐾 Paw<span>fy</span></a>
+            <p>Acesse o painel do seu pet shop</p>
         </div>
 
-        <?php
-        require_once __DIR__ . '/../config/config.php';
-
-        if (isset($_SESSION['error'])) {
-            echo '<div class="alert alert-error">' . $_SESSION['error'] . '</div>';
-            unset($_SESSION['error']);
-        }
-        ?>
+        <?php if (isset($_SESSION['error'])): ?>
+        <div class="alert alert-error"><?= $_SESSION['error'] ?></div>
+        <?php unset($_SESSION['error']); ?>
+        <?php endif; ?>
 
         <form method="POST" action="authenticate.php">
             <div class="form-group">
                 <label for="email">E-mail</label>
-                <input type="email" id="email" name="email" class="form-control" required autofocus>
+                <input type="email" id="email" name="email"
+                       class="form-control" required autofocus
+                       placeholder="voce@seumail.com">
             </div>
 
             <div class="form-group">
                 <label for="senha">Senha</label>
-                <input type="password" id="senha" name="senha" class="form-control" required>
+                <input type="password" id="senha" name="senha"
+                       class="form-control" required
+                       placeholder="Sua senha">
             </div>
 
             <button type="submit" class="btn-login">Entrar</button>
         </form>
 
-        <div class="info-box">
-            <strong>Credenciais de Teste:</strong>
-            <p>E-mail: admin@petshop.com</p>
-            <p>Senha: admin123</p>
+        <div class="card-footer">
+            Não tem conta ainda? <a href="register.php">Criar conta grátis</a>
         </div>
     </div>
+
+    <a href="<?= APP_URL ?>" class="back-link">← Voltar para o site</a>
 </body>
 </html>
