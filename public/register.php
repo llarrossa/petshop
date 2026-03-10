@@ -97,16 +97,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $db->commit();
 
             // 3. Fazer login automático
-            $_SESSION['user_id']      = $userId;
-            $_SESSION['user_name']    = $nomeAdmin;
-            $_SESSION['user_email']   = $email;
-            $_SESSION['company_id']   = $companyId;
-            $_SESSION['company_name'] = $nomeEmpresa;
-            $_SESSION['plano']        = $plano;
-            $_SESSION['perfil']       = 'admin';
+            $_SESSION['user_id']             = $userId;
+            $_SESSION['user_name']           = $nomeAdmin;
+            $_SESSION['user_email']          = $email;
+            $_SESSION['company_id']          = $companyId;
+            $_SESSION['company_name']        = $nomeEmpresa;
+            $_SESSION['plano']               = $plano;
+            $_SESSION['perfil']              = 'admin';
+            $_SESSION['subscription_status'] = 'incomplete';
 
-            $_SESSION['success'] = 'Bem-vindo ao Pawfy! Sua conta foi criada com sucesso.';
-            header('Location: ' . APP_URL . '/index.php?page=dashboard');
+            header('Location: ' . APP_URL . '/public/planos.php?novo=1');
             exit;
 
         } catch (Exception $e) {

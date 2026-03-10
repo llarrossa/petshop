@@ -21,6 +21,16 @@ define('APP_NAME', 'Pawfy');
 define('APP_VERSION', '1.0.0');
 define('APP_URL', APP_URL_LOCAL ?? 'http://localhost/petshop');
 
+// Configurações da Stripe
+define('STRIPE_SECRET_KEY',      STRIPE_SECRET_KEY_LOCAL      ?? '');
+define('STRIPE_PUBLISHABLE_KEY', STRIPE_PUBLISHABLE_KEY_LOCAL ?? '');
+define('STRIPE_WEBHOOK_SECRET',  STRIPE_WEBHOOK_SECRET_LOCAL  ?? '');
+
+// Price IDs dos planos na Stripe
+define('STRIPE_PRICE_BANHO_TOSA', STRIPE_PRICE_BANHO_TOSA_LOCAL ?? '');
+define('STRIPE_PRICE_LOJA',       STRIPE_PRICE_LOJA_LOCAL       ?? '');
+define('STRIPE_PRICE_COMPLETO',   STRIPE_PRICE_COMPLETO_LOCAL   ?? '');
+
 // Timezone
 date_default_timezone_set('America/Sao_Paulo');
 
@@ -67,12 +77,28 @@ define('PLANOS', [
     ]
 ]);
 
+// Mapeamento de plano para Stripe Price ID
+define('STRIPE_PRICE_IDS', [
+    'banho_tosa' => STRIPE_PRICE_BANHO_TOSA,
+    'loja'       => STRIPE_PRICE_LOJA,
+    'completo'   => STRIPE_PRICE_COMPLETO,
+]);
+
+// Statuses de assinatura considerados ativos
+define('SUBSCRIPTION_ACTIVE_STATUSES', ['active', 'trialing']);
+
 // Função auxiliar para verificar se usuário está logado
 function verificarLogin() {
     if (!isset($_SESSION['user_id'])) {
         header('Location: ' . APP_URL . '/public/login.php');
         exit;
     }
+}
+
+// Verifica se a assinatura da empresa está ativa
+function assinaturaAtiva() {
+    $status = $_SESSION['subscription_status'] ?? 'incomplete';
+    return in_array($status, SUBSCRIPTION_ACTIVE_STATUSES);
 }
 
 // Função auxiliar para obter company_id do usuário logado

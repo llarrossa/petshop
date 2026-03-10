@@ -11,6 +11,11 @@ if (!isset($_SESSION['user_id'])) {
     exit;
 }
 
+// Assinatura inativa → planos
+if (!assinaturaAtiva()) {
+    header('Location: ' . APP_URL . '/public/planos.php');
+    exit;
+}
 
 // Troca de plano (modo teste)
 if (isset($_GET['trocar_plano'])) {
@@ -23,28 +28,26 @@ if (isset($_GET['trocar_plano'])) {
 }
 
 // Determinar qual página/controller carregar
-$page = $_GET['page'] ?? 'dashboard';
+$page   = $_GET['page']   ?? 'dashboard';
 $action = $_GET['action'] ?? 'list';
 
 // Mapear páginas para controllers
 $controllers = [
-    'dashboard' => __DIR__ . '/public/dashboard.php',
-    'tutores' => __DIR__ . '/controllers/tutores.php',
-    'pets' => __DIR__ . '/controllers/pets.php',
-    'produtos' => __DIR__ . '/controllers/produtos.php',
-    'servicos' => __DIR__ . '/controllers/servicos.php',
+    'dashboard'     => __DIR__ . '/public/dashboard.php',
+    'tutores'       => __DIR__ . '/controllers/tutores.php',
+    'pets'          => __DIR__ . '/controllers/pets.php',
+    'produtos'      => __DIR__ . '/controllers/produtos.php',
+    'servicos'      => __DIR__ . '/controllers/servicos.php',
     'profissionais' => __DIR__ . '/controllers/profissionais.php',
-    'agenda' => __DIR__ . '/controllers/agenda.php',
-    'vendas' => __DIR__ . '/controllers/vendas.php',
-    'financeiro' => __DIR__ . '/controllers/financeiro.php',
-    'relatorios' => __DIR__ . '/controllers/relatorios.php',
+    'agenda'        => __DIR__ . '/controllers/agenda.php',
+    'vendas'        => __DIR__ . '/controllers/vendas.php',
+    'financeiro'    => __DIR__ . '/controllers/financeiro.php',
+    'relatorios'    => __DIR__ . '/controllers/relatorios.php',
 ];
 
-// Verificar se a página existe
 if (isset($controllers[$page]) && file_exists($controllers[$page])) {
     include $controllers[$page];
 } else {
-    // Página não encontrada
     $_SESSION['error'] = 'Página não encontrada.';
     header('Location: ?page=dashboard');
     exit;

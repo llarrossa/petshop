@@ -1,3 +1,5 @@
 config/config.local.php
 sessions/
 public/uploads/
+vendor/
+composer.lock
