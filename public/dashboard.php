@@ -222,7 +222,7 @@ ob_start();
                         <?php foreach (array_slice($vendas_hoje, 0, 5) as $vend): ?>
                         <tr>
                             <td>#<?= $vend['id'] ?></td>
-                            <td><?= htmlspecialchars($vend['tutor_nome']) ?></td>
+                            <td><?= htmlspecialchars($vend['tutor_nome'] ?? '') ?></td>
                             <td><?= formatarMoeda($vend['valor_final']) ?></td>
                             <td><?= ucfirst($vend['forma_pagamento']) ?></td>
                             <td><?= date('H:i', strtotime($vend['data'])) ?></td>
