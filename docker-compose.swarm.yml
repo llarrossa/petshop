@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    image: petshop-app:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+    networks:
+      - petshop-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  nginx:
+    image: nginx:alpine
+    volumes:
+      - ./:/var/www
+      - ./docker/nginx:/etc/nginx/conf.d
+    ports:
+      - "8888:80"
+    networks:
+      - petshop-network
+    depends_on:
+      - app
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+  db:
+    image: mysql:8.0
+    environment:
+      MYSQL_DATABASE: petshop_saas
+      MYSQL_ROOT_PASSWORD: petshop123
+    volumes:
+      - petshop-mysql:/var/lib/mysql
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/migration_stripe.sql:/docker-entrypoint-initdb.d/02-migration_stripe.sql
+      - ./database/migration_trial.sql:/docker-entrypoint-initdb.d/03-migration_trial.sql
+    networks:
+      - petshop-network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+
+networks:
+  petshop-network:
+    driver: overlay
+    attachable: true
+
+volumes:
+  petshop-mysql:
+    driver: local

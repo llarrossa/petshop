@@ -3,3 +3,4 @@ sessions/
 public/uploads/
 vendor/
 composer.lock
+composer.phar
