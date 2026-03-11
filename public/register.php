@@ -20,16 +20,16 @@ $formData = [];
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     // --- Dados recebidos ---
-    $nomeEmpresa    = sanitize($_POST['nome_empresa'] ?? '');
-    $cnpj           = sanitize($_POST['cnpj'] ?? '');
-    $plano          = sanitize($_POST['plano'] ?? 'completo');
-    $nomeAdmin      = sanitize($_POST['nome_admin'] ?? '');
-    $email          = sanitize($_POST['email'] ?? '');
-    $senha          = $_POST['senha'] ?? '';
-    $senhaConfirm   = $_POST['senha_confirm'] ?? '';
+    $nomeEmpresa  = sanitize($_POST['nome_empresa'] ?? '');
+    $cnpj         = sanitize($_POST['cnpj'] ?? '');
+    $nomeAdmin    = sanitize($_POST['nome_admin'] ?? '');
+    $email        = sanitize($_POST['email'] ?? '');
+    $senha        = $_POST['senha'] ?? '';
+    $senhaConfirm = $_POST['senha_confirm'] ?? '';
+    $plano        = 'completo'; // Trial sempre inicia com acesso completo
 
     // Preservar dados para repopular o formulário em caso de erro
-    $formData = compact('nomeEmpresa', 'cnpj', 'plano', 'nomeAdmin', 'email');
+    $formData = compact('nomeEmpresa', 'cnpj', 'nomeAdmin', 'email');
 
     // --- Validações ---
     if (empty($nomeEmpresa)) {
@@ -52,10 +52,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'As senhas não coincidem.';
     }
 
-    if (!array_key_exists($plano, PLANOS)) {
-        $errors[] = 'Plano inválido.';
-    }
-
     // Verificar se e-mail já existe
     if (empty($errors)) {
         $db  = Database::getInstance();
@@ -72,9 +68,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         try {
             $db->beginTransaction();
 
-            // 1. Inserir empresa
-            $sqlCompany = "INSERT INTO companies (nome, cnpj, plano, status)
-                           VALUES (:nome, :cnpj, :plano, 'ativo')";
+            // 1. Inserir empresa com trial de 7 dias
+            $sqlCompany = "INSERT INTO companies (nome, cnpj, plano, status, subscription_status, trial_ends_at)
+                           VALUES (:nome, :cnpj, :plano, 'ativo', 'trialing', DATE_ADD(NOW(), INTERVAL 7 DAY))";
             $db->execute($sqlCompany, [
                 ':nome'  => $nomeEmpresa,
                 ':cnpj'  => $cnpj ?: null,
@@ -96,7 +92,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $db->commit();
 
-            // 3. Fazer login automático
+            // 3. Buscar trial_ends_at salvo
+            $trialEndsAt = date('Y-m-d H:i:s', strtotime('+7 days'));
+
+            // 4. Fazer login automático
             $_SESSION['user_id']             = $userId;
             $_SESSION['user_name']           = $nomeAdmin;
             $_SESSION['user_email']          = $email;
@@ -104,9 +103,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $_SESSION['company_name']        = $nomeEmpresa;
             $_SESSION['plano']               = $plano;
             $_SESSION['perfil']              = 'admin';
-            $_SESSION['subscription_status'] = 'incomplete';
+            $_SESSION['subscription_status'] = 'trialing';
+            $_SESSION['trial_ends_at']       = $trialEndsAt;
 
-            header('Location: ' . APP_URL . '/public/planos.php?novo=1');
+            header('Location: ' . APP_URL . '/index.php?page=dashboard&trial_novo=1');
             exit;
 
         } catch (Exception $e) {
@@ -240,41 +240,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             gap: 12px;
         }
 
-        /* Seletor de plano */
-        .planos-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 10px;
-            margin-bottom: 4px;
-        }
-
-        .plano-option input[type="radio"] { display: none; }
-
-        .plano-option label {
-            display: block;
-            border: 2px solid #E2E8F0;
-            border-radius: 10px;
-            padding: 12px 10px;
-            text-align: center;
-            cursor: pointer;
-            transition: all .18s;
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: #475569;
-            background: #F8FAFC;
-        }
-
-        .plano-option label .plan-icon { display: block; font-size: 1.4rem; margin-bottom: 4px; }
-
-        .plano-option input[type="radio"]:checked + label {
-            border-color: #2563EB;
-            background: #EFF6FF;
-            color: #2563EB;
-            box-shadow: 0 0 0 3px rgba(37,99,235,.1);
-        }
-
-        .plano-option label:hover { border-color: #93C5FD; }
-
         /* Botão */
         .btn-submit {
             width: 100%;
@@ -344,7 +309,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="logo">
             <a href="<?= APP_URL ?>">🐾 Paw<span>fy</span></a>
-            <p>Crie a conta do seu pet shop — é grátis para começar</p>
+            <p>7 dias grátis, sem cartão de crédito</p>
         </div>
 
         <?php if (!empty($errors)): ?>
@@ -386,36 +351,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <!-- Plano -->
-            <p class="section-label">Plano</p>
-
-            <div class="planos-grid">
-                <div class="plano-option">
-                    <input type="radio" id="plano_banho" name="plano" value="banho_tosa"
-                           <?= (($formData['plano'] ?? 'completo') === 'banho_tosa') ? 'checked' : '' ?>>
-                    <label for="plano_banho">
-                        <span class="plan-icon">✂️</span>
-                        Banho & Tosa
-                    </label>
-                </div>
-                <div class="plano-option">
-                    <input type="radio" id="plano_loja" name="plano" value="loja"
-                           <?= (($formData['plano'] ?? 'completo') === 'loja') ? 'checked' : '' ?>>
-                    <label for="plano_loja">
-                        <span class="plan-icon">🏪</span>
-                        Pet Shop
-                    </label>
-                </div>
-                <div class="plano-option">
-                    <input type="radio" id="plano_completo" name="plano" value="completo"
-                           <?= (($formData['plano'] ?? 'completo') === 'completo') ? 'checked' : '' ?>>
-                    <label for="plano_completo">
-                        <span class="plan-icon">🐾</span>
-                        Completo
-                    </label>
-                </div>
-            </div>
-
             <!-- Seção: Dados do responsável -->
             <p class="section-label">Responsável pela conta</p>
 
@@ -450,7 +385,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             </div>
 
-            <button type="submit" class="btn-submit">Criar minha conta grátis →</button>
+            <button type="submit" class="btn-submit">Começar teste grátis de 7 dias →</button>
 
         </form>
 

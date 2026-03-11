@@ -14,9 +14,9 @@ ob_start();
         <form method="POST" class="form" id="form-agenda">
             <div class="form-row">
                 <div class="form-group col-md-6">
-                    <label for="tutor_id">Tutor *</label>
+                    <label for="tutor_id">Cliente *</label>
                     <select id="tutor_id" name="tutor_id" class="form-control" required onchange="carregarPets(this.value)">
-                        <option value="">Selecione o tutor...</option>
+                        <option value="">Selecione o cliente...</option>
                         <?php foreach ($tutores as $t): ?>
                         <option value="<?= $t['id'] ?>" <?= (isset($dados['tutor_id']) && $dados['tutor_id'] == $t['id']) ? 'selected' : '' ?>>
                             <?= htmlspecialchars($t['nome']) ?>
@@ -27,7 +27,7 @@ ob_start();
                 <div class="form-group col-md-6">
                     <label for="pet_id">Pet *</label>
                     <select id="pet_id" name="pet_id" class="form-control" required>
-                        <option value="">Selecione o tutor primeiro...</option>
+                        <option value="">Selecione o cliente primeiro...</option>
                         <?php if ($isEdit && !empty($pets_tutor)): ?>
                             <?php foreach ($pets_tutor as $p): ?>
                             <option value="<?= $p['id'] ?>" <?= ($dados['pet_id'] == $p['id']) ? 'selected' : '' ?>>
@@ -103,7 +103,7 @@ function carregarPets(tutorId) {
     var select = document.getElementById('pet_id');
     select.innerHTML = '<option value="">Carregando...</option>';
     if (!tutorId) {
-        select.innerHTML = '<option value="">Selecione o tutor primeiro...</option>';
+        select.innerHTML = '<option value="">Selecione o cliente primeiro...</option>';
         return;
     }
     fetch('?page=pets&action=buscar&termo=&tutor_id=' + tutorId)

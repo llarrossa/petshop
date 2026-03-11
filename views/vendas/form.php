@@ -11,7 +11,7 @@ ob_start();
 <form method="POST" class="form" id="form-venda">
     <div class="form-row">
         <div class="form-group col-md-5">
-            <label for="tutor_id">Tutor / Cliente</label>
+            <label for="tutor_id">Cliente</label>
             <select id="tutor_id" name="tutor_id" class="form-control">
                 <option value="">Cliente avulso</option>
                 <?php foreach ($tutores as $t): ?>

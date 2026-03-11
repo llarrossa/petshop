@@ -102,11 +102,11 @@ ob_start();
         </div>
     </div>
 
-    <!-- Informações do Tutor -->
+    <!-- Informações do Cliente -->
     <div class="col-md-6">
         <div class="card mb-4">
             <div class="card-header">
-                <h3>👤 Tutor Responsável</h3>
+                <h3>👤 Cliente Responsável</h3>
             </div>
             <div class="card-body">
                 <table class="table table-detail">
@@ -127,8 +127,8 @@ ob_start();
                         <td><?= htmlspecialchars($dados['tutor_email'] ?? '-') ?></td>
                     </tr>
                 </table>
-                <a href="?page=tutores&action=view&id=<?= $dados['tutor_id'] ?>" class="btn btn-info btn-sm">
-                    Ver Perfil do Tutor
+                <a href="?page=clientes&action=view&id=<?= $dados['tutor_id'] ?>" class="btn btn-info btn-sm">
+                    Ver Perfil do Cliente
                 </a>
             </div>
         </div>

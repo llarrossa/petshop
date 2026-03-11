@@ -1,13 +1,13 @@
 <?php
-$page_title = 'Lista de Tutores';
+$page_title = 'Clientes';
 $sort_col = $_GET['orderby'] ?? 'id';
 $sort_dir = $_GET['order'] ?? 'asc';
 ob_start();
 ?>
 
 <div class="page-header">
-    <h2>Tutores / Clientes</h2>
-    <a href="?page=tutores&action=create" class="btn btn-primary">+ Novo Tutor</a>
+    <h2>Clientes</h2>
+    <a href="?page=clientes&action=create" class="btn btn-primary">+ Novo Cliente</a>
 </div>
 
 <div class="card">
@@ -24,7 +24,7 @@ ob_start();
                 <option value="inativo" <?= (isset($_GET['status']) && $_GET['status'] == 'inativo') ? 'selected' : '' ?>>Inativo</option>
             </select>
             <button type="submit" class="btn btn-secondary">Filtrar</button>
-            <a href="?page=tutores&action=list" class="btn btn-link">Limpar</a>
+            <a href="?page=clientes&action=list" class="btn btn-link">Limpar</a>
         </form>
     </div>
 </div>
@@ -32,7 +32,7 @@ ob_start();
 <div class="card">
     <div class="card-body">
         <?php if (empty($tutores)): ?>
-            <p class="text-center">Nenhum tutor cadastrado.</p>
+            <p class="text-center">Nenhum cliente cadastrado.</p>
         <?php else: ?>
         <table class="table">
             <thead>
@@ -60,9 +60,9 @@ ob_start();
                         </span>
                     </td>
                     <td class="actions">
-                        <a href="?page=tutores&action=view&id=<?= $t['id'] ?>" class="btn btn-sm btn-info" title="Visualizar">👁️</a>
-                        <a href="?page=tutores&action=edit&id=<?= $t['id'] ?>" class="btn btn-sm btn-warning" title="Editar">✏️</a>
-                        <a href="?page=tutores&action=delete&id=<?= $t['id'] ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este tutor?')">🗑️</a>
+                        <a href="?page=clientes&action=view&id=<?= $t['id'] ?>" class="btn btn-sm btn-info" title="Visualizar">👁️</a>
+                        <a href="?page=clientes&action=edit&id=<?= $t['id'] ?>" class="btn btn-sm btn-warning" title="Editar">✏️</a>
+                        <a href="?page=clientes&action=delete&id=<?= $t['id'] ?>" class="btn btn-sm btn-danger" title="Excluir" onclick="return confirm('Tem certeza que deseja excluir este cliente?')">🗑️</a>
                     </td>
                 </tr>
                 <?php endforeach; ?>

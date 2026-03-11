@@ -8,10 +8,11 @@ require_once __DIR__ . '/../database/connection.php';
 
 verificarLogin();
 
-$isNovo    = isset($_GET['novo']);
-$isCanceled = isset($_GET['canceled']);
-$status    = $_SESSION['subscription_status'] ?? 'incomplete';
-$planoAtual = $_SESSION['plano'] ?? 'completo';
+$isNovo         = isset($_GET['novo']);
+$isCanceled     = isset($_GET['canceled']);
+$isTrialExpirado = isset($_GET['trial_expirado']);
+$status         = $_SESSION['subscription_status'] ?? 'incomplete';
+$planoAtual     = $_SESSION['plano'] ?? 'completo';
 
 $db      = Database::getInstance();
 $company = $db->queryOne("SELECT * FROM companies WHERE id = :id", [':id' => getCompanyId()]);
@@ -20,24 +21,28 @@ $company = $db->queryOne("SELECT * FROM companies WHERE id = :id", [':id' => get
 if ($company) {
     $_SESSION['subscription_status'] = $company['subscription_status'];
     $_SESSION['plano']               = $company['plano'];
-    $status    = $company['subscription_status'];
+    $_SESSION['trial_ends_at']       = $company['trial_ends_at'];
+    $status     = $company['subscription_status'];
     $planoAtual = $company['plano'];
 }
 
-$jaAssinado = in_array($status, SUBSCRIPTION_ACTIVE_STATUSES);
+$emTrial    = ($status === 'trialing');
+$jaAssinado = ($status === 'active');
 
 $plansInfo = [
     'banho_tosa' => [
         'icon'     => '✂️',
         'nome'     => 'Banho & Tosa',
+        'preco'    => 'R$ 49',
         'desc'     => 'Para pet shops focados em serviços de estética e atendimento.',
-        'features' => ['Agenda de atendimentos', 'Cadastro de tutores e pets', 'Serviços e profissionais', 'Dashboard gerencial'],
+        'features' => ['Agenda de atendimentos', 'Cadastro de clientes e pets', 'Serviços e profissionais', 'Dashboard gerencial'],
         'color'    => '#2563EB',
         'bg'       => '#EFF6FF',
     ],
     'loja' => [
         'icon'     => '🏪',
         'nome'     => 'Pet Shop',
+        'preco'    => 'R$ 79',
         'desc'     => 'Para lojas focadas em vendas de produtos e controle de estoque.',
         'features' => ['Cadastro de produtos', 'PDV — Ponto de Venda', 'Controle de estoque', 'Controle financeiro', 'Relatórios de vendas', 'Dashboard gerencial'],
         'color'    => '#F97316',
@@ -47,6 +52,7 @@ $plansInfo = [
     'completo' => [
         'icon'     => '🐾',
         'nome'     => 'Completo',
+        'preco'    => 'R$ 119',
         'desc'     => 'Para pet shops completos com serviços e venda de produtos.',
         'features' => ['Todos os módulos', 'Agenda + PDV integrados', 'Prontuário veterinário', 'Estoque e financeiro', 'Relatórios completos'],
         'color'    => '#2563EB',
@@ -184,9 +190,23 @@ $plansInfo = [
 
         .plan-icon { font-size: 2rem; display: block; margin-bottom: 14px; }
 
-        .plan-name { font-size: 1.15rem; font-weight: 800; margin-bottom: 8px; }
+        .plan-name { font-size: 1.15rem; font-weight: 800; margin-bottom: 6px; }
 
-        .plan-desc { color: #64748B; font-size: 0.83rem; line-height: 1.5; margin-bottom: 20px; min-height: 48px; }
+        .plan-price {
+            font-size: 2rem;
+            font-weight: 800;
+            color: #1E293B;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .plan-price-period {
+            font-size: 0.88rem;
+            font-weight: 400;
+            color: #64748B;
+        }
+
+        .plan-desc { color: #64748B; font-size: 0.83rem; line-height: 1.5; margin-bottom: 20px; margin-top: 8px; min-height: 40px; }
 
         .plan-features {
             list-style: none;
@@ -330,9 +350,12 @@ $plansInfo = [
         <?php if ($jaAssinado): ?>
             <h1>Seu plano atual</h1>
             <p><?= htmlspecialchars($_SESSION['company_name'] ?? '') ?> · Assinatura ativa</p>
-        <?php elseif ($isNovo): ?>
-            <h1>Bem-vindo ao Pawfy! 🎉</h1>
-            <p>Sua conta foi criada. Escolha um plano para começar a usar o sistema.</p>
+        <?php elseif ($emTrial): ?>
+            <h1>Você está no período de teste 🎉</h1>
+            <p>Aproveite os <?= diasRestantesTrial() ?> dias restantes e escolha o plano ideal para o seu pet shop.</p>
+        <?php elseif ($isTrialExpirado): ?>
+            <h1>Seu teste gratuito encerrou</h1>
+            <p>Escolha um plano para continuar usando o Pawfy.</p>
         <?php else: ?>
             <h1>Escolha seu plano</h1>
             <p>Assine para ter acesso completo ao sistema de gestão do seu pet shop.</p>
@@ -341,13 +364,26 @@ $plansInfo = [
 
     <!-- Alertas -->
     <div class="alert-wrap">
-        <?php if ($isCanceled): ?>
+        <?php if ($isTrialExpirado): ?>
+        <div class="alert alert-warning">
+            ⏳ Seu período de teste gratuito de 7 dias encerrou. Assine um plano para continuar acessando o sistema.
+        </div>
+        <?php elseif ($emTrial): ?>
+        <?php $dias = diasRestantesTrial(); ?>
+        <div class="alert alert-info">
+            ⏳ Você está usando o Pawfy gratuitamente.
+            <?php if ($dias > 1): ?>
+                Seu teste expira em <strong><?= $dias ?> dias</strong>.
+            <?php elseif ($dias === 1): ?>
+                Seu teste expira <strong>amanhã</strong>!
+            <?php else: ?>
+                Seu teste expira <strong>hoje</strong>!
+            <?php endif; ?>
+            Assine agora para não perder acesso.
+        </div>
+        <?php elseif ($isCanceled): ?>
         <div class="alert alert-warning">
             ⚠️ A assinatura não foi concluída. Escolha um plano para continuar.
-        </div>
-        <?php elseif ($isNovo && !$jaAssinado): ?>
-        <div class="alert alert-info">
-            ℹ️ Conta criada! Selecione um plano abaixo para ativar seu acesso ao Pawfy.
         </div>
         <?php elseif ($status === 'past_due'): ?>
         <div class="alert alert-warning">
@@ -377,6 +413,7 @@ $plansInfo = [
 
                 <span class="plan-icon"><?= $info['icon'] ?></span>
                 <div class="plan-name"><?= $info['nome'] ?></div>
+                <div class="plan-price"><?= $info['preco'] ?><span class="plan-price-period">/mês</span></div>
                 <div class="plan-desc"><?= $info['desc'] ?></div>
 
                 <ul class="plan-features">
@@ -390,11 +427,17 @@ $plansInfo = [
                 <?php else: ?>
                     <form method="POST" action="subscribe.php">
                         <input type="hidden" name="plano" value="<?= $chave ?>">
-                        <?php
-                            $btnClass = $isPopular ? 'btn-subscribe-orange' : 'btn-subscribe-primary';
-                        ?>
+                        <?php $btnClass = $isPopular ? 'btn-subscribe-orange' : 'btn-subscribe-primary'; ?>
                         <button type="submit" class="btn-subscribe <?= $btnClass ?>">
-                            <?= $jaAssinado ? 'Mudar para este plano' : 'Assinar este plano' ?> →
+                            <?php if ($jaAssinado): ?>
+                                Mudar para este plano →
+                            <?php elseif ($emTrial && $chave === $planoAtual): ?>
+                                Assinar este plano →
+                            <?php elseif ($emTrial): ?>
+                                Assinar este plano →
+                            <?php else: ?>
+                                Assinar este plano →
+                            <?php endif; ?>
                         </button>
                     </form>
                 <?php endif; ?>
@@ -402,7 +445,7 @@ $plansInfo = [
             <?php endforeach; ?>
         </div>
 
-        <?php if ($jaAssinado): ?>
+        <?php if ($jaAssinado || $emTrial): ?>
         <div class="dashboard-link-wrap">
             <a href="<?= APP_URL ?>/index.php?page=dashboard">← Voltar ao Dashboard</a>
         </div>

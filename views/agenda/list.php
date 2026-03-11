@@ -51,7 +51,7 @@ $status_badges = [
         <table class="table">
             <thead>
                 <tr>
-                    <th>Data</th><th>Hora</th><th>Pet</th><th>Tutor</th>
+                    <th>Data</th><th>Hora</th><th>Pet</th><th>Cliente</th>
                     <th>Serviço</th><th>Profissional</th><th>Status</th><th>Ações</th>
                 </tr>
             </thead>

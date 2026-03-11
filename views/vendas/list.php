@@ -46,7 +46,7 @@ ob_start();
         <?php else: ?>
         <table class="table">
             <thead>
-                <tr><th>#</th><th>Data</th><th>Tutor</th><th>Pet</th><th>Valor</th><th>Desconto</th><th>Total</th><th>Forma Pgto</th><th>Status</th><th>Ações</th></tr>
+                <tr><th>#</th><th>Data</th><th>Cliente</th><th>Pet</th><th>Valor</th><th>Desconto</th><th>Total</th><th>Forma Pgto</th><th>Status</th><th>Ações</th></tr>
             </thead>
             <tbody>
                 <?php foreach ($vendas as $v): ?>

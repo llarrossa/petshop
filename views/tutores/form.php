@@ -1,12 +1,12 @@
 <?php
-$page_title = isset($dados) ? 'Editar Tutor' : 'Novo Tutor';
+$page_title = isset($dados) ? 'Editar Cliente' : 'Novo Cliente';
 $isEdit = isset($dados);
 ob_start();
 ?>
 
 <div class="page-header">
-    <h2><?= $isEdit ? 'Editar' : 'Novo' ?> Tutor</h2>
-    <a href="?page=tutores&action=list" class="btn btn-secondary">← Voltar</a>
+    <h2><?= $isEdit ? 'Editar' : 'Novo' ?> Cliente</h2>
+    <a href="?page=clientes&action=list" class="btn btn-secondary">← Voltar</a>
 </div>
 
 <div class="card">
@@ -111,7 +111,7 @@ ob_start();
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Salvar</button>
-                <a href="?page=tutores&action=list" class="btn btn-secondary">Cancelar</a>
+                <a href="?page=clientes&action=list" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

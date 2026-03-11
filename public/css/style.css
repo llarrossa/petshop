@@ -115,6 +115,24 @@ body {
     font-size: 13px;
 }
 
+.btn-assinar {
+    display: block;
+    text-align: center;
+    padding: 8px;
+    background-color: #2563EB;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    margin-top: 10px;
+    font-size: 13px;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.btn-assinar:hover {
+    background-color: #1D4ED8;
+}
+
 .btn-logout {
     display: block;
     text-align: center;
@@ -491,6 +509,18 @@ textarea.form-control {
     resize: vertical;
 }
 
+/* Grid row — container flex para colunas col-md-* */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 -8px 15px;
+}
+
+.row > [class*="col-md-"] {
+    padding: 0 8px;
+    box-sizing: border-box;
+}
+
 .form-inline {
     display: flex;
     gap: 10px;
@@ -832,7 +862,8 @@ textarea.form-control {
         margin-bottom: 0;
     }
 
-    .form-row [class*="col-md-"] {
+    .form-row [class*="col-md-"],
+    .row [class*="col-md-"] {
         flex: 0 0 100%;
         max-width: 100%;
     }

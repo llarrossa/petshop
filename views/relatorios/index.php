@@ -38,7 +38,7 @@ ob_start();
         </div>
         <?php if (!empty($dados_relatorio['vendas'])): ?>
         <table class="table table-sm" style="margin-top:1rem;">
-            <thead><tr><th>#</th><th>Data</th><th>Tutor</th><th>Valor</th><th>Forma Pgto</th></tr></thead>
+            <thead><tr><th>#</th><th>Data</th><th>Cliente</th><th>Valor</th><th>Forma Pgto</th></tr></thead>
             <tbody>
                 <?php foreach ($dados_relatorio['vendas'] as $v): ?>
                 <tr>
@@ -147,7 +147,7 @@ ob_start();
     <div class="card-body">
         <?php if (!empty($dados_relatorio['agendamentos'])): ?>
         <table class="table table-sm">
-            <thead><tr><th>Data</th><th>Hora</th><th>Pet</th><th>Tutor</th><th>Serviço</th><th>Profissional</th><th>Status</th></tr></thead>
+            <thead><tr><th>Data</th><th>Hora</th><th>Pet</th><th>Cliente</th><th>Serviço</th><th>Profissional</th><th>Status</th></tr></thead>
             <tbody>
                 <?php foreach ($dados_relatorio['agendamentos'] as $ag): ?>
                 <tr>

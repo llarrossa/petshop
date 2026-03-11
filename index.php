@@ -4,11 +4,28 @@
  */
 
 require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/database/connection.php';
 
 // Usuário não logado: exibir landing page
 if (!isset($_SESSION['user_id'])) {
     include __DIR__ . '/landing.php';
     exit;
+}
+
+// Verificar se o trial expirou
+if (($_SESSION['subscription_status'] ?? '') === 'trialing') {
+    $trialEndsAt = $_SESSION['trial_ends_at'] ?? null;
+    if ($trialEndsAt && strtotime($trialEndsAt) < time()) {
+        $db = Database::getInstance();
+        $db->execute(
+            "UPDATE companies SET subscription_status = 'incomplete' WHERE id = :id",
+            [':id' => getCompanyId()]
+        );
+        $_SESSION['subscription_status'] = 'incomplete';
+        unset($_SESSION['trial_ends_at']);
+        header('Location: ' . APP_URL . '/public/planos.php?trial_expirado=1');
+        exit;
+    }
 }
 
 // Assinatura inativa → planos
@@ -34,7 +51,7 @@ $action = $_GET['action'] ?? 'list';
 // Mapear páginas para controllers
 $controllers = [
     'dashboard'     => __DIR__ . '/public/dashboard.php',
-    'tutores'       => __DIR__ . '/controllers/tutores.php',
+    'clientes'      => __DIR__ . '/controllers/tutores.php',
     'pets'          => __DIR__ . '/controllers/pets.php',
     'produtos'      => __DIR__ . '/controllers/produtos.php',
     'servicos'      => __DIR__ . '/controllers/servicos.php',

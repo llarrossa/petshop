@@ -23,7 +23,7 @@ ob_start();
                 </div>
                 <div class="col-md-3">
                     <select name="tutor_id" class="form-control">
-                        <option value="">Todos os tutores</option>
+                        <option value="">Todos os clientes</option>
                         <?php foreach ($tutores as $t): ?>
                             <option value="<?= $t['id'] ?>" <?= (isset($_GET['tutor_id']) && $_GET['tutor_id'] == $t['id']) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($t['nome']) ?>
@@ -67,7 +67,7 @@ ob_start();
                             <th><?= thSort('Espécie', 'especie', $sort_col, $sort_dir) ?></th>
                             <th><?= thSort('Raça', 'raca', $sort_col, $sort_dir) ?></th>
                             <th><?= thSort('Sexo', 'sexo', $sort_col, $sort_dir) ?></th>
-                            <th><?= thSort('Tutor', 'tutor_nome', $sort_col, $sort_dir) ?></th>
+                            <th><?= thSort('Cliente', 'tutor_nome', $sort_col, $sort_dir) ?></th>
                             <th>Telefone</th>
                             <th>Idade</th>
                             <th><?= thSort('Status', 'status', $sort_col, $sort_dir) ?></th>

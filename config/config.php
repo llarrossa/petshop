@@ -65,7 +65,7 @@ define('ITEMS_PER_PAGE', 20);
 define('PLANOS', [
     'banho_tosa' => [
         'nome' => 'Banho & Tosa',
-        'modulos' => ['agenda', 'tutores', 'pets', 'servicos', 'profissionais', 'dashboard']
+        'modulos' => ['agenda', 'clientes', 'pets', 'servicos', 'profissionais', 'dashboard']
     ],
     'loja' => [
         'nome' => 'Pet Shop',
@@ -73,7 +73,7 @@ define('PLANOS', [
     ],
     'completo' => [
         'nome' => 'Completo',
-        'modulos' => ['agenda', 'tutores', 'pets', 'servicos', 'profissionais', 'produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'prontuario', 'dashboard']
+        'modulos' => ['agenda', 'clientes', 'pets', 'servicos', 'profissionais', 'produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'prontuario', 'dashboard']
     ]
 ]);
 
@@ -110,6 +110,14 @@ function getCompanyId() {
 function moduloDisponivel($modulo) {
     $plano = $_SESSION['plano'] ?? 'completo';
     return in_array($modulo, PLANOS[$plano]['modulos']);
+}
+
+// Retorna os dias restantes do trial (0 se expirado ou sem trial)
+function diasRestantesTrial() {
+    $trialEndsAt = $_SESSION['trial_ends_at'] ?? null;
+    if (!$trialEndsAt) return 0;
+    $diff = strtotime($trialEndsAt) - time();
+    return max(0, (int) ceil($diff / 86400));
 }
 
 // Função para sanitizar entrada de dados

@@ -12,19 +12,19 @@ ob_start();
     <div class="card-body">
         <form method="POST" class="needs-validation" novalidate>
             <div class="row">
-                <!-- Tutor -->
+                <!-- Cliente -->
                 <div class="col-md-6">
                     <div class="form-group">
-                        <label for="tutor_id">Tutor (Dono) *</label>
+                        <label for="tutor_id">Cliente (Dono) *</label>
                         <select name="tutor_id" id="tutor_id" class="form-control" required>
-                            <option value="">Selecione o tutor</option>
+                            <option value="">Selecione o cliente</option>
                             <?php foreach ($tutores as $t): ?>
                                 <option value="<?= $t['id'] ?>" <?= (isset($dados['tutor_id']) && $dados['tutor_id'] == $t['id']) ? 'selected' : '' ?>>
                                     <?= htmlspecialchars($t['nome']) ?> - <?= htmlspecialchars($t['telefone'] ?? '') ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
-                        <div class="invalid-feedback">Por favor, selecione o tutor.</div>
+                        <div class="invalid-feedback">Por favor, selecione o cliente.</div>
                     </div>
                 </div>
 

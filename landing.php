@@ -261,8 +261,10 @@
             letter-spacing: .06em; text-transform: uppercase; white-space: nowrap;
         }
         .plan-icon { font-size: 2.2rem; margin-bottom: 16px; display: block; }
-        .plan-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 8px; }
-        .plan-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.55; margin-bottom: 28px; min-height: 50px; }
+        .plan-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 6px; }
+        .plan-price { font-size: 2rem; font-weight: 800; color: #1E293B; margin-bottom: 4px; line-height: 1; }
+        .plan-price-period { font-size: 0.88rem; font-weight: 400; color: var(--muted); }
+        .plan-desc { color: var(--muted); font-size: 0.85rem; line-height: 1.55; margin-top: 8px; margin-bottom: 28px; min-height: 44px; }
         .plan-features { list-style: none; display: flex; flex-direction: column; gap: 10px; margin-bottom: 32px; }
         .plan-features li { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; }
         .plan-check {
@@ -563,10 +565,11 @@
             <div class="plan-card">
                 <span class="plan-icon">✂️</span>
                 <div class="plan-name">Banho & Tosa</div>
+                <div class="plan-price">R$ 49<span class="plan-price-period">/mês</span></div>
                 <div class="plan-desc">Para pet shops focados em serviços de estética e atendimento animal.</div>
                 <ul class="plan-features">
                     <li><span class="plan-check">✓</span> Agenda de atendimentos</li>
-                    <li><span class="plan-check">✓</span> Cadastro de tutores</li>
+                    <li><span class="plan-check">✓</span> Cadastro de clientes</li>
                     <li><span class="plan-check">✓</span> Ficha completa dos pets</li>
                     <li><span class="plan-check">✓</span> Cadastro de serviços</li>
                     <li><span class="plan-check">✓</span> Gestão de profissionais</li>
@@ -579,6 +582,7 @@
                 <div class="plan-popular">Mais popular</div>
                 <span class="plan-icon">🏪</span>
                 <div class="plan-name">Pet Shop</div>
+                <div class="plan-price">R$ 79<span class="plan-price-period">/mês</span></div>
                 <div class="plan-desc">Para lojas focadas em vendas de produtos e controle de estoque.</div>
                 <ul class="plan-features">
                     <li><span class="plan-check">✓</span> Cadastro de produtos</li>
@@ -594,11 +598,12 @@
             <div class="plan-card">
                 <span class="plan-icon">🐾</span>
                 <div class="plan-name">Completo</div>
+                <div class="plan-price">R$ 119<span class="plan-price-period">/mês</span></div>
                 <div class="plan-desc">Para pet shops completos com serviços e venda de produtos integrados.</div>
                 <ul class="plan-features">
                     <li><span class="plan-check">✓</span> Todos os módulos incluídos</li>
                     <li><span class="plan-check">✓</span> Agenda + PDV integrados</li>
-                    <li><span class="plan-check">✓</span> Tutores, pets e prontuário</li>
+                    <li><span class="plan-check">✓</span> Clientes, pets e prontuário</li>
                     <li><span class="plan-check">✓</span> Estoque e financeiro</li>
                     <li><span class="plan-check">✓</span> Relatórios completos</li>
                     <li><span class="plan-check">✓</span> Suporte prioritário</li>

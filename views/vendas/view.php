@@ -22,7 +22,7 @@ ob_start();
                 <p><?= date('d/m/Y H:i', strtotime($dados['data'])) ?></p>
             </div>
             <div class="form-group col-md-4">
-                <label>Tutor</label>
+                <label>Cliente</label>
                 <p><?= htmlspecialchars($dados['tutor_nome'] ?? 'Cliente avulso') ?></p>
             </div>
             <div class="form-group col-md-3">

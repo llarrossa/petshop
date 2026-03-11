@@ -43,11 +43,11 @@ switch ($action) {
             $tutor->status = 'ativo';
 
             if ($tutor->create()) {
-                $_SESSION['success'] = 'Tutor cadastrado com sucesso!';
-                header('Location: ?page=tutores&action=list');
+                $_SESSION['success'] = 'Cliente cadastrado com sucesso!';
+                header('Location: ?page=clientes&action=list');
                 exit;
             } else {
-                $_SESSION['error'] = 'Erro ao cadastrar tutor.';
+                $_SESSION['error'] = 'Erro ao cadastrar cliente.';
             }
         }
         include __DIR__ . '/../views/tutores/form.php';
@@ -58,8 +58,8 @@ switch ($action) {
         $dados = $tutor->getById($id);
 
         if (!$dados) {
-            $_SESSION['error'] = 'Tutor não encontrado.';
-            header('Location: ?page=tutores&action=list');
+            $_SESSION['error'] = 'Cliente não encontrado.';
+            header('Location: ?page=clientes&action=list');
             exit;
         }
 
@@ -78,11 +78,11 @@ switch ($action) {
             $tutor->status = sanitize($_POST['status']);
 
             if ($tutor->update()) {
-                $_SESSION['success'] = 'Tutor atualizado com sucesso!';
-                header('Location: ?page=tutores&action=list');
+                $_SESSION['success'] = 'Cliente atualizado com sucesso!';
+                header('Location: ?page=clientes&action=list');
                 exit;
             } else {
-                $_SESSION['error'] = 'Erro ao atualizar tutor.';
+                $_SESSION['error'] = 'Erro ao atualizar cliente.';
             }
         }
         include __DIR__ . '/../views/tutores/form.php';
@@ -93,8 +93,8 @@ switch ($action) {
         $dados = $tutor->getById($id);
 
         if (!$dados) {
-            $_SESSION['error'] = 'Tutor não encontrado.';
-            header('Location: ?page=tutores&action=list');
+            $_SESSION['error'] = 'Cliente não encontrado.';
+            header('Location: ?page=clientes&action=list');
             exit;
         }
 
@@ -109,12 +109,12 @@ switch ($action) {
         $id = (int)$_GET['id'];
 
         if ($tutor->delete($id)) {
-            $_SESSION['success'] = 'Tutor excluído com sucesso!';
+            $_SESSION['success'] = 'Cliente excluído com sucesso!';
         } else {
-            $_SESSION['error'] = 'Erro ao excluir tutor. Verifique se existem registros vinculados.';
+            $_SESSION['error'] = 'Erro ao excluir cliente. Verifique se existem registros vinculados.';
         }
 
-        header('Location: ?page=tutores&action=list');
+        header('Location: ?page=clientes&action=list');
         exit;
         break;
 
@@ -129,6 +129,6 @@ switch ($action) {
         break;
 
     default:
-        header('Location: ?page=tutores&action=list');
+        header('Location: ?page=clientes&action=list');
         exit;
 }

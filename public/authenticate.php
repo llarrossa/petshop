@@ -16,7 +16,7 @@ $senha = $_POST['senha'];
 
 $db = Database::getInstance();
 
-$sql = "SELECT u.*, c.nome as company_name, c.plano, c.subscription_status
+$sql = "SELECT u.*, c.nome as company_name, c.plano, c.subscription_status, c.trial_ends_at
         FROM users u
         INNER JOIN companies c ON u.company_id = c.id
         WHERE u.email = :email AND u.status = 'ativo'";
@@ -24,6 +24,19 @@ $sql = "SELECT u.*, c.nome as company_name, c.plano, c.subscription_status
 $user = $db->queryOne($sql, [':email' => $email]);
 
 if ($user && password_verify($senha, $user['senha'])) {
+    $subscriptionStatus = $user['subscription_status'];
+    $trialEndsAt        = $user['trial_ends_at'];
+
+    // Verificar se o trial expirou
+    if ($subscriptionStatus === 'trialing' && !empty($trialEndsAt) && strtotime($trialEndsAt) < time()) {
+        $db->execute(
+            "UPDATE companies SET subscription_status = 'incomplete' WHERE id = :id",
+            [':id' => $user['company_id']]
+        );
+        $subscriptionStatus = 'incomplete';
+        $trialEndsAt        = null;
+    }
+
     $_SESSION['user_id']             = $user['id'];
     $_SESSION['user_name']           = $user['nome'];
     $_SESSION['user_email']          = $user['email'];
@@ -31,13 +44,15 @@ if ($user && password_verify($senha, $user['senha'])) {
     $_SESSION['company_name']        = $user['company_name'];
     $_SESSION['plano']               = $user['plano'];
     $_SESSION['perfil']              = $user['perfil'];
-    $_SESSION['subscription_status'] = $user['subscription_status'];
+    $_SESSION['subscription_status'] = $subscriptionStatus;
+    $_SESSION['trial_ends_at']       = $trialEndsAt;
 
-    // Assinatura ativa → dashboard; caso contrário → planos
+    // Assinatura ativa (ou trial válido) → dashboard; caso contrário → planos
     if (assinaturaAtiva()) {
         header('Location: ' . APP_URL . '/index.php?page=dashboard');
     } else {
-        header('Location: ' . APP_URL . '/public/planos.php');
+        $suffix = ($subscriptionStatus === 'incomplete' && empty($user['stripe_subscription_id'])) ? '?trial_expirado=1' : '';
+        header('Location: ' . APP_URL . '/public/planos.php' . $suffix);
     }
     exit;
 } else {

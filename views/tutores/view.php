@@ -1,18 +1,18 @@
 <?php
-$page_title = 'Detalhes do Tutor';
+$page_title = 'Detalhes do Cliente';
 ob_start();
 ?>
 
 <div class="page-header">
     <h2><?= htmlspecialchars($dados['nome']) ?></h2>
     <div>
-        <a href="?page=tutores&action=edit&id=<?= $dados['id'] ?>" class="btn btn-warning">✏️ Editar</a>
-        <a href="?page=tutores&action=list" class="btn btn-secondary">← Voltar</a>
+        <a href="?page=clientes&action=edit&id=<?= $dados['id'] ?>" class="btn btn-warning">✏️ Editar</a>
+        <a href="?page=clientes&action=list" class="btn btn-secondary">← Voltar</a>
     </div>
 </div>
 
 <div class="card">
-    <div class="card-header"><h3>Dados do Tutor</h3></div>
+    <div class="card-header"><h3>Dados do Cliente</h3></div>
     <div class="card-body">
         <div class="form-row">
             <div class="form-group col-md-6">

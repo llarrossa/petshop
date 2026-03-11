@@ -24,8 +24,8 @@
                 <ul>
                     <li><a href="?page=dashboard"><span>📊</span> Dashboard</a></li>
 
-                    <?php if (moduloDisponivel('tutores')): ?>
-                    <li><a href="?page=tutores"><span>👥</span> Tutores</a></li>
+                    <?php if (moduloDisponivel('clientes')): ?>
+                    <li><a href="?page=clientes"><span>👥</span> Clientes</a></li>
                     <?php endif; ?>
 
                     <?php if (moduloDisponivel('pets')): ?>
@@ -65,6 +65,9 @@
             <div class="user-info">
                 <p><strong><?= $_SESSION['user_name'] ?? 'Usuário' ?></strong></p>
                 <p><?= $_SESSION['user_email'] ?? '' ?></p>
+                <?php if (($_SESSION['subscription_status'] ?? '') === 'trialing'): ?>
+                <a href="<?= APP_URL ?>/public/planos.php" class="btn-assinar">Assinar um plano</a>
+                <?php endif; ?>
                 <a href="<?= APP_URL ?>/public/logout.php" class="btn-logout">Sair</a>
             </div>
         </aside>
@@ -103,6 +106,54 @@
                     </div>
                 </div>
             </header>
+
+            <?php if (($_SESSION['subscription_status'] ?? '') === 'trialing'): ?>
+            <?php $diasTrial = diasRestantesTrial(); ?>
+            <div class="trial-banner">
+                <div class="trial-banner-content">
+                    <span class="trial-banner-icon">⏳</span>
+                    <span class="trial-banner-text">
+                        Você está no <strong>período de teste gratuito</strong>.
+                        <?php if ($diasTrial > 1): ?>
+                            Faltam <strong><?= $diasTrial ?> dias</strong> para expirar.
+                        <?php elseif ($diasTrial === 1): ?>
+                            <strong>Último dia</strong> do seu teste!
+                        <?php else: ?>
+                            Seu teste <strong>expira hoje</strong>.
+                        <?php endif; ?>
+                    </span>
+                    <a href="<?= APP_URL ?>/public/planos.php" class="trial-banner-btn">Assinar agora</a>
+                </div>
+            </div>
+            <style>
+                .trial-banner {
+                    background: linear-gradient(90deg, #1E3A8A, #2563EB);
+                    color: #fff;
+                    padding: 10px 24px;
+                }
+                .trial-banner-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    flex-wrap: wrap;
+                    font-size: 0.88rem;
+                }
+                .trial-banner-icon { font-size: 1rem; }
+                .trial-banner-text { flex: 1; min-width: 200px; }
+                .trial-banner-btn {
+                    background: #fff;
+                    color: #2563EB;
+                    padding: 5px 16px;
+                    border-radius: 6px;
+                    font-weight: 700;
+                    font-size: 0.82rem;
+                    text-decoration: none;
+                    white-space: nowrap;
+                    transition: background .15s;
+                }
+                .trial-banner-btn:hover { background: #EFF6FF; }
+            </style>
+            <?php endif; ?>
 
             <div class="main-content">
                 <!-- Mensagens de feedback -->
