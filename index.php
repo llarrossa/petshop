@@ -34,6 +34,11 @@ if (!assinaturaAtiva()) {
     exit;
 }
 
+// Mensagem de boas-vindas após confirmação de e-mail
+if (isset($_GET['conta_confirmada'])) {
+    $_SESSION['success'] = 'E-mail confirmado! Bem-vindo(a) ao Pawfy. Seu teste gratuito de 7 dias começou agora.';
+}
+
 // Troca de plano (modo teste)
 if (isset($_GET['trocar_plano'])) {
     $plano = $_GET['trocar_plano'];
@@ -60,6 +65,7 @@ $controllers = [
     'vendas'        => __DIR__ . '/controllers/vendas.php',
     'financeiro'    => __DIR__ . '/controllers/financeiro.php',
     'relatorios'    => __DIR__ . '/controllers/relatorios.php',
+    'conta'         => __DIR__ . '/controllers/conta.php',
 ];
 
 if (isset($controllers[$page]) && file_exists($controllers[$page])) {

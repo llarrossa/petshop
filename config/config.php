@@ -21,6 +21,15 @@ define('APP_NAME', 'Pawfy');
 define('APP_VERSION', '1.0.0');
 define('APP_URL', APP_URL_LOCAL ?? 'http://localhost/petshop');
 
+// Configurações de SMTP
+define('SMTP_HOST',       SMTP_HOST_LOCAL       ?? 'smtp.gmail.com');
+define('SMTP_PORT',       SMTP_PORT_LOCAL       ?? 587);
+define('SMTP_ENCRYPTION', SMTP_ENCRYPTION_LOCAL ?? 'tls');   // 'tls' ou 'ssl'
+define('SMTP_USER',       SMTP_USER_LOCAL       ?? '');
+define('SMTP_PASS',       SMTP_PASS_LOCAL       ?? '');
+define('SMTP_FROM_EMAIL', SMTP_FROM_EMAIL_LOCAL ?? '');
+define('SMTP_FROM_NAME',  SMTP_FROM_NAME_LOCAL  ?? APP_NAME);
+
 // Configurações da Stripe
 define('STRIPE_SECRET_KEY',      STRIPE_SECRET_KEY_LOCAL      ?? '');
 define('STRIPE_PUBLISHABLE_KEY', STRIPE_PUBLISHABLE_KEY_LOCAL ?? '');
@@ -145,16 +154,6 @@ function formatarDataHora($data) {
     if (empty($data)) return '';
     $timestamp = strtotime($data);
     return date('d/m/Y H:i', $timestamp);
-}
-
-// Função para converter data BR para MySQL
-function dataBRparaMySQL($data) {
-    if (empty($data)) return null;
-    $partes = explode('/', $data);
-    if (count($partes) == 3) {
-        return $partes[2] . '-' . $partes[1] . '-' . $partes[0];
-    }
-    return null;
 }
 
 // Função para gerar cabeçalho de tabela ordenável

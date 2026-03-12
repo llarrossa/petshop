@@ -68,6 +68,7 @@
                 <?php if (($_SESSION['subscription_status'] ?? '') === 'trialing'): ?>
                 <a href="<?= APP_URL ?>/public/planos.php" class="btn-assinar">Assinar um plano</a>
                 <?php endif; ?>
+                <a href="?page=conta" class="btn-conta">Minha Conta</a>
                 <a href="<?= APP_URL ?>/public/logout.php" class="btn-logout">Sair</a>
             </div>
         </aside>

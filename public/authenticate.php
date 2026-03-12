@@ -24,6 +24,13 @@ $sql = "SELECT u.*, c.nome as company_name, c.plano, c.subscription_status, c.tr
 $user = $db->queryOne($sql, [':email' => $email]);
 
 if ($user && password_verify($senha, $user['senha'])) {
+    // Bloquear login se e-mail ainda não foi confirmado
+    if (empty($user['email_verified'])) {
+        $_SESSION['cadastro_email'] = $email;
+        $_SESSION['error'] = 'Confirme seu e-mail antes de entrar. Verifique sua caixa de entrada.';
+        header('Location: email_pendente.php');
+        exit;
+    }
     $subscriptionStatus = $user['subscription_status'];
     $trialEndsAt        = $user['trial_ends_at'];
 

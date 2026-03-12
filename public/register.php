@@ -6,6 +6,7 @@
 
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../database/connection.php';
+require_once __DIR__ . '/../helpers/mailer.php';
 
 // Usuário já logado → redirecionar para o dashboard
 if (isset($_SESSION['user_id'])) {
@@ -92,21 +93,42 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $db->commit();
 
-            // 3. Buscar trial_ends_at salvo
-            $trialEndsAt = date('Y-m-d H:i:s', strtotime('+7 days'));
+            // 3. Gerar token de verificação de e-mail (válido por 24h)
+            $token     = bin2hex(random_bytes(32));
+            $expiresAt = date('Y-m-d H:i:s', time() + 86400);
+            $db->execute(
+                "INSERT INTO email_verifications (user_id, token, expires_at) VALUES (:uid, :token, :exp)",
+                [':uid' => $userId, ':token' => $token, ':exp' => $expiresAt]
+            );
 
-            // 4. Fazer login automático
-            $_SESSION['user_id']             = $userId;
-            $_SESSION['user_name']           = $nomeAdmin;
-            $_SESSION['user_email']          = $email;
-            $_SESSION['company_id']          = $companyId;
-            $_SESSION['company_name']        = $nomeEmpresa;
-            $_SESSION['plano']               = $plano;
-            $_SESSION['perfil']              = 'admin';
-            $_SESSION['subscription_status'] = 'trialing';
-            $_SESSION['trial_ends_at']       = $trialEndsAt;
+            // 4. Enviar e-mail de confirmação com boas-vindas
+            $verifyUrl      = APP_URL . '/public/verify_email.php?token=' . $token;
+            $nomeEmpresaEsc = htmlspecialchars($nomeEmpresa);
+            $nomeAdminEsc   = htmlspecialchars($nomeAdmin);
+            $htmlConfirmacao = "
+            <div style='font-family:sans-serif;max-width:500px;margin:0 auto;color:#1E293B'>
+                <h2 style='color:#2563EB'>🐾 Bem-vindo(a) ao Pawfy!</h2>
+                <p>Olá, <strong>{$nomeAdminEsc}</strong>!</p>
+                <p>Sua conta para <strong>{$nomeEmpresaEsc}</strong> foi criada com sucesso.</p>
+                <p>Para ativar o acesso e começar seu <strong>teste gratuito de 7 dias</strong>, confirme seu e-mail clicando no botão abaixo:</p>
+                <p style='margin:24px 0'>
+                    <a href='{$verifyUrl}'
+                       style='background:#2563EB;color:#fff;padding:12px 24px;border-radius:8px;text-decoration:none;font-weight:700'>
+                        Confirmar meu e-mail
+                    </a>
+                </p>
+                <p style='font-size:0.85rem;color:#64748B'>
+                    O link é válido por <strong>24 horas</strong>.<br>
+                    Se não foi você quem criou esta conta, ignore este e-mail.
+                </p>
+                <hr style='border:none;border-top:1px solid #E2E8F0;margin:24px 0'>
+                <p style='font-size:0.75rem;color:#94A3B8'>Pawfy — Sistema de gestão para pet shops</p>
+            </div>";
+            enviarEmailSMTP($email, $nomeAdmin, 'Confirme seu e-mail — Pawfy 🐾', $htmlConfirmacao);
 
-            header('Location: ' . APP_URL . '/index.php?page=dashboard&trial_novo=1');
+            // 5. Redirecionar para página intermediária (sem auto-login)
+            $_SESSION['cadastro_email'] = $email;
+            header('Location: ' . APP_URL . '/public/email_pendente.php');
             exit;
 
         } catch (Exception $e) {

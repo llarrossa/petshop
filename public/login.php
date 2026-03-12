@@ -185,6 +185,12 @@ if (isset($_SESSION['user_id'])) {
             <button type="submit" class="btn-login">Entrar</button>
         </form>
 
+        <div style="text-align:right;margin-top:10px">
+            <a href="forgot_password.php" style="font-size:0.82rem;color:#2563EB;text-decoration:none">
+                Esqueci minha senha
+            </a>
+        </div>
+
         <div class="card-footer">
             Não tem conta ainda? <a href="register.php">Criar conta grátis</a>
         </div>
