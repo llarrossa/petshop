@@ -291,7 +291,7 @@
   - Lista exibe apenas clientes da empresa logada (company_id correto)
   - Colunas: nome, CPF, telefone, cidade, status
   - Paginação ativa (20 registros por página)
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -302,7 +302,7 @@
 - **Resultado Esperado:**
   - Apenas clientes cujo nome contenha "João" são exibidos
   - Clientes sem "João" no nome não aparecem
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -313,7 +313,7 @@
   2. Filtrar por `status=inativo`
 - **Resultado Esperado:**
   - Cada filtro retorna apenas clientes do respectivo status
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -324,7 +324,7 @@
   2. Clicar novamente para ordenar Z→A
 - **Resultado Esperado:**
   - Lista reordena corretamente em ambas as direções
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -338,7 +338,7 @@
   - Registro inserido com `company_id` correto
   - Redirecionamento para lista com mensagem de sucesso
   - Cliente aparece na listagem
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -350,7 +350,7 @@
 - **Resultado Esperado:**
   - Cadastro salvo sem erros
   - Campos opcionais salvos como `NULL` ou string vazia conforme o banco
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -364,7 +364,7 @@
   - Dado atualizado no banco
   - Mensagem de sucesso exibida
   - Lista reflete a alteração
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -377,7 +377,7 @@
   - Lista de pets do cliente
   - Histórico de vendas
   - Histórico de agendamentos
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -389,7 +389,7 @@
   - Cliente removido do banco
   - Mensagem de sucesso
   - Não aparece mais na listagem
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -400,7 +400,7 @@
 - **Resultado Esperado:**
   - Operação bloqueada por integridade referencial (FK) OU mensagem de erro amigável exibida
   - Cliente não removido
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -422,7 +422,7 @@
 - **Resultado Esperado:**
   - Formulário vazio ou redirecionamento com erro `"Cliente não encontrado."`
   - Dado da empresa B não exposto
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -437,7 +437,7 @@
 - **Resultado Esperado:**
   - Pet inserido com `tutor_id` e `company_id` corretos
   - Aparece na lista e no perfil do cliente
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -449,7 +449,7 @@
   3. Criar pet com espécie `Outro`
 - **Resultado Esperado:**
   - Todos criados sem erro; espécie salva corretamente
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -459,7 +459,7 @@
   1. Filtrar por tutor específico via `?page=pets&action=list&tutor_id={ID}`
 - **Resultado Esperado:**
   - Apenas pets do tutor filtrado exibidos
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -469,7 +469,7 @@
   1. Filtrar por `especie=Cão`
 - **Resultado Esperado:**
   - Apenas cães listados
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -491,7 +491,7 @@
   2. Salvar
 - **Resultado Esperado:**
   - Alterações persistidas corretamente
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -501,7 +501,7 @@
   1. Acessar `?page=pets&action=delete&id={ID}`
 - **Resultado Esperado:**
   - Pet removido; mensagem de sucesso
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -536,7 +536,7 @@
 - **Resultado Esperado:**
   - Serviço inserido com `company_id` correto
   - Aparece na lista de serviços
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -556,7 +556,7 @@
   1. Filtrar por `status=inativo`
 - **Resultado Esperado:**
   - Apenas serviços inativos listados
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -568,7 +568,7 @@
 - **Resultado Esperado:**
   - Preço atualizado no banco
   - Novos agendamentos e vendas usam o novo preço como sugestão
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -578,7 +578,7 @@
   1. `?page=servicos&action=delete&id={ID}`
 - **Resultado Esperado:**
   - Serviço removido ou inativado; mensagem de sucesso
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -603,7 +603,7 @@
 - **Resultado Esperado:**
   - Profissional inserido com `company_id` correto
   - Aparece na listagem e está disponível na agenda/vendas
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -623,7 +623,7 @@
   1. Alterar comissão de `15%` para `20%`
 - **Resultado Esperado:**
   - Comissão atualizada no banco
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -633,7 +633,7 @@
   1. Filtrar por `status=ativo`
 - **Resultado Esperado:**
   - Apenas profissionais ativos listados
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -643,7 +643,7 @@
   1. `?page=profissionais&action=delete&id={ID}`
 - **Resultado Esperado:**
   - Profissional removido; mensagem de sucesso
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -659,7 +659,7 @@
   - Agendamento inserido com `status = 'agendado'`
   - Aparece na listagem da data selecionada
   - Exibido no dashboard em "Próximos Agendamentos"
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -669,7 +669,7 @@
   1. Criar agendamento sem selecionar profissional
 - **Resultado Esperado:**
   - Agendamento criado com `profissional_id = NULL`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -680,7 +680,7 @@
 - **Resultado Esperado:**
   - Erro `"Verifique a disponibilidade do horário."` exibido
   - Nenhum novo agendamento inserido
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -690,7 +690,7 @@
   1. Filtrar por `data=2026-03-20`
 - **Resultado Esperado:**
   - Apenas agendamentos da data `2026-03-20` exibidos
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -700,7 +700,7 @@
   1. Filtrar por `status=finalizado`
 - **Resultado Esperado:**
   - Apenas agendamentos finalizados exibidos
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -710,7 +710,7 @@
   1. Filtrar por `profissional_id={ID}`
 - **Resultado Esperado:**
   - Apenas agendamentos do profissional selecionado listados
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -720,7 +720,7 @@
   1. `?page=agenda&action=status&id={ID}&novo_status=confirmado`
 - **Resultado Esperado:**
   - Status atualizado para `confirmado`; mensagem de sucesso
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -732,7 +732,7 @@
   3. `em_atendimento` → `finalizado`
 - **Resultado Esperado:**
   - Cada transição persiste corretamente no banco
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -743,7 +743,7 @@
   2. Alterar status para `cancelado`
 - **Resultado Esperado:**
   - Ambos os status aceitos e persistidos
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 

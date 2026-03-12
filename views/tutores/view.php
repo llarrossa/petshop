@@ -7,7 +7,7 @@ ob_start();
     <h2><?= htmlspecialchars($dados['nome']) ?></h2>
     <div>
         <a href="?page=clientes&action=edit&id=<?= $dados['id'] ?>" class="btn btn-warning">✏️ Editar</a>
-        <a href="?page=clientes&action=list" class="btn btn-secondary">← Voltar</a>
+        <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">← Voltar</a>
     </div>
 </div>
 

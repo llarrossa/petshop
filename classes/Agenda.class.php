@@ -186,7 +186,37 @@ class Agenda {
             $params[':pet_id'] = $filtros['pet_id'];
         }
 
-        $sql .= " ORDER BY a.data DESC, a.hora DESC";
+        // Busca por nome do pet ou cliente
+        if (!empty($filtros['busca'])) {
+            $sql .= " AND (p.nome LIKE :busca_p OR t.nome LIKE :busca_t)";
+            $params[':busca_p'] = '%' . $filtros['busca'] . '%';
+            $params[':busca_t'] = '%' . $filtros['busca'] . '%';
+        }
+
+        // Ordenação
+        $col_map = [
+            'data'             => 'a.data',
+            'hora'             => 'a.hora',
+            'pet_nome'         => 'p.nome',
+            'tutor_nome'       => 't.nome',
+            'servico_nome'     => 's.nome',
+            'profissional_nome'=> 'pr.nome',
+            'status'           => 'a.status',
+        ];
+        $orderby   = $col_map[$filtros['orderby'] ?? 'data'] ?? 'a.data';
+        $order     = isset($filtros['order']) && strtolower($filtros['order']) === 'asc' ? 'ASC' : 'DESC';
+        $sql .= " ORDER BY $orderby $order";
+        if ($orderby === 'a.data') {
+            $sql .= ", a.hora $order";
+        }
+
+        // Paginação
+        if (isset($filtros['limit'])) {
+            $sql .= " LIMIT " . (int)$filtros['limit'];
+            if (isset($filtros['offset'])) {
+                $sql .= " OFFSET " . (int)$filtros['offset'];
+            }
+        }
 
         return $this->db->query($sql, $params);
     }
@@ -276,17 +306,31 @@ class Agenda {
      * Contar agendamentos
      */
     public function count($filtros = []) {
-        $sql = "SELECT COUNT(*) as total FROM agenda WHERE company_id = :company_id";
+        $sql = "SELECT COUNT(*) as total FROM agenda a
+                LEFT JOIN pets p ON a.pet_id = p.id
+                LEFT JOIN tutors t ON a.tutor_id = t.id
+                WHERE a.company_id = :company_id";
         $params = [':company_id' => $this->company_id];
 
         if (isset($filtros['status'])) {
-            $sql .= " AND status = :status";
+            $sql .= " AND a.status = :status";
             $params[':status'] = $filtros['status'];
         }
 
         if (isset($filtros['data'])) {
-            $sql .= " AND data = :data";
+            $sql .= " AND a.data = :data";
             $params[':data'] = $filtros['data'];
+        }
+
+        if (isset($filtros['profissional_id'])) {
+            $sql .= " AND a.profissional_id = :profissional_id";
+            $params[':profissional_id'] = $filtros['profissional_id'];
+        }
+
+        if (!empty($filtros['busca'])) {
+            $sql .= " AND (p.nome LIKE :busca_p OR t.nome LIKE :busca_t)";
+            $params[':busca_p'] = '%' . $filtros['busca'] . '%';
+            $params[':busca_t'] = '%' . $filtros['busca'] . '%';
         }
 
         $result = $this->db->queryOne($sql, $params);

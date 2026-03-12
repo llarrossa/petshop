@@ -1,12 +1,13 @@
 <?php
-$page_title = isset($dados) ? 'Editar Agendamento' : 'Novo Agendamento';
-$isEdit = isset($dados);
+$isEdit     = isset($dados['id']);
+$page_title = $isEdit ? 'Editar Agendamento' : 'Novo Agendamento';
+$back_url   = $back_url ?? '?page=agenda&action=list';
 ob_start();
 ?>
 
 <div class="page-header">
     <h2><?= $isEdit ? 'Editar' : 'Novo' ?> Agendamento</h2>
-    <a href="?page=agenda&action=list" class="btn btn-secondary">← Voltar</a>
+    <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">← Voltar</a>
 </div>
 
 <div class="card">
@@ -28,7 +29,7 @@ ob_start();
                     <label for="pet_id">Pet *</label>
                     <select id="pet_id" name="pet_id" class="form-control" required>
                         <option value="">Selecione o cliente primeiro...</option>
-                        <?php if ($isEdit && !empty($pets_tutor)): ?>
+                        <?php if (!empty($pets_tutor)): ?>
                             <?php foreach ($pets_tutor as $p): ?>
                             <option value="<?= $p['id'] ?>" <?= ($dados['pet_id'] == $p['id']) ? 'selected' : '' ?>>
                                 <?= htmlspecialchars($p['nome']) ?>
@@ -92,7 +93,7 @@ ob_start();
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Salvar</button>
-                <a href="?page=agenda&action=list" class="btn btn-secondary">Cancelar</a>
+                <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

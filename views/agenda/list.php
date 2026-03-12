@@ -1,14 +1,28 @@
 <?php
 $page_title = 'Agenda';
-ob_start();
+$sort_col   = $_GET['orderby'] ?? 'data';
+$sort_dir   = $_GET['order']   ?? 'desc';
+
+$qs_filtros = http_build_query(array_filter([
+    'page'            => 'agenda',
+    'action'          => 'list',
+    'data'            => $_GET['data']            ?? '',
+    'status'          => $_GET['status']          ?? '',
+    'profissional_id' => $_GET['profissional_id'] ?? '',
+    'busca'           => $_GET['busca']           ?? '',
+    'orderby'         => $sort_col,
+    'order'           => $sort_dir,
+], fn($v) => $v !== ''));
+
 $status_badges = [
-    'agendado' => 'info',
-    'confirmado' => 'primary',
+    'agendado'       => 'info',
+    'confirmado'     => 'primary',
     'em_atendimento' => 'warning',
-    'finalizado' => 'success',
-    'cancelado' => 'danger',
-    'faltou' => 'secondary',
+    'finalizado'     => 'success',
+    'cancelado'      => 'danger',
+    'faltou'         => 'secondary',
 ];
+ob_start();
 ?>
 
 <div class="page-header">
@@ -20,8 +34,10 @@ $status_badges = [
     <div class="card-header"><h3>Filtros</h3></div>
     <div class="card-body">
         <form method="GET" class="form-inline">
-            <input type="hidden" name="page" value="agenda">
+            <input type="hidden" name="page"   value="agenda">
             <input type="hidden" name="action" value="list">
+            <input type="text" name="busca" placeholder="Buscar por pet ou cliente..."
+                   value="<?= htmlspecialchars($_GET['busca'] ?? '') ?>" class="form-control">
             <input type="date" name="data" value="<?= htmlspecialchars($_GET['data'] ?? '') ?>" class="form-control">
             <select name="profissional_id" class="form-control">
                 <option value="">Todos os profissionais</option>
@@ -51,8 +67,14 @@ $status_badges = [
         <table class="table">
             <thead>
                 <tr>
-                    <th>Data</th><th>Hora</th><th>Pet</th><th>Cliente</th>
-                    <th>Serviço</th><th>Profissional</th><th>Status</th><th>Ações</th>
+                    <th><?= thSort('Data',         'data',              $sort_col, $sort_dir) ?></th>
+                    <th><?= thSort('Hora',         'hora',              $sort_col, $sort_dir) ?></th>
+                    <th><?= thSort('Pet',          'pet_nome',          $sort_col, $sort_dir) ?></th>
+                    <th><?= thSort('Cliente',      'tutor_nome',        $sort_col, $sort_dir) ?></th>
+                    <th><?= thSort('Serviço',      'servico_nome',      $sort_col, $sort_dir) ?></th>
+                    <th><?= thSort('Profissional', 'profissional_nome', $sort_col, $sort_dir) ?></th>
+                    <th><?= thSort('Status',       'status',            $sort_col, $sort_dir) ?></th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
@@ -80,6 +102,43 @@ $status_badges = [
                 <?php endforeach; ?>
             </tbody>
         </table>
+
+        <?php if ($total_paginas > 1): ?>
+        <div class="pagination" style="display:flex;gap:4px;justify-content:center;margin-top:16px;flex-wrap:wrap;">
+            <?php if ($pagina_atual > 1): ?>
+                <a href="?<?= $qs_filtros ?>&p=<?= $pagina_atual - 1 ?>" class="btn btn-sm btn-secondary">&laquo; Anterior</a>
+            <?php endif; ?>
+
+            <?php
+            $inicio = max(1, $pagina_atual - 2);
+            $fim    = min($total_paginas, $pagina_atual + 2);
+            if ($inicio > 1): ?>
+                <a href="?<?= $qs_filtros ?>&p=1" class="btn btn-sm btn-secondary">1</a>
+                <?php if ($inicio > 2): ?><span style="padding:4px 2px;">…</span><?php endif; ?>
+            <?php endif; ?>
+
+            <?php for ($i = $inicio; $i <= $fim; $i++): ?>
+                <?php if ($i === $pagina_atual): ?>
+                    <span class="btn btn-sm btn-primary"><?= $i ?></span>
+                <?php else: ?>
+                    <a href="?<?= $qs_filtros ?>&p=<?= $i ?>" class="btn btn-sm btn-secondary"><?= $i ?></a>
+                <?php endif; ?>
+            <?php endfor; ?>
+
+            <?php if ($fim < $total_paginas): ?>
+                <?php if ($fim < $total_paginas - 1): ?><span style="padding:4px 2px;">…</span><?php endif; ?>
+                <a href="?<?= $qs_filtros ?>&p=<?= $total_paginas ?>" class="btn btn-sm btn-secondary"><?= $total_paginas ?></a>
+            <?php endif; ?>
+
+            <?php if ($pagina_atual < $total_paginas): ?>
+                <a href="?<?= $qs_filtros ?>&p=<?= $pagina_atual + 1 ?>" class="btn btn-sm btn-secondary">Próxima &raquo;</a>
+            <?php endif; ?>
+        </div>
+        <p style="text-align:center;font-size:.8rem;color:#888;margin-top:6px;">
+            Exibindo <?= count($agendamentos) ?> de <?= $total ?> agendamento<?= $total !== 1 ? 's' : '' ?>
+        </p>
+        <?php endif; ?>
+
         <?php endif; ?>
     </div>
 </div>

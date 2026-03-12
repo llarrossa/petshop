@@ -155,13 +155,23 @@ class Servico {
         $sql = "SELECT COUNT(*) as total FROM servicos WHERE company_id = :company_id";
         $params = [':company_id' => $this->company_id];
 
-        if (isset($filtros['status'])) {
+        if (isset($filtros['status']) && $filtros['status'] !== '') {
             $sql .= " AND status = :status";
             $params[':status'] = $filtros['status'];
         }
 
+        if (isset($filtros['nome']) && $filtros['nome'] !== '') {
+            $sql .= " AND nome LIKE :nome";
+            $params[':nome'] = '%' . $filtros['nome'] . '%';
+        }
+
+        if (isset($filtros['categoria']) && $filtros['categoria'] !== '') {
+            $sql .= " AND categoria = :categoria";
+            $params[':categoria'] = $filtros['categoria'];
+        }
+
         $result = $this->db->queryOne($sql, $params);
-        return $result['total'] ?? 0;
+        return (int)($result['total'] ?? 0);
     }
 
     /**

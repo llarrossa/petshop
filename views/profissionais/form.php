@@ -6,7 +6,7 @@ ob_start();
 
 <div class="page-header">
     <h2><?= $isEdit ? 'Editar' : 'Novo' ?> Profissional</h2>
-    <a href="?page=profissionais&action=list" class="btn btn-secondary">← Voltar</a>
+    <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">← Voltar</a>
 </div>
 
 <div class="card">
@@ -39,7 +39,7 @@ ob_start();
                     <label for="tipo_comissao">Tipo de Comissão</label>
                     <select id="tipo_comissao" name="tipo_comissao" class="form-control">
                         <option value="percentual" <?= (isset($dados['tipo_comissao']) && $dados['tipo_comissao'] == 'percentual') ? 'selected' : '' ?>>Percentual (%)</option>
-                        <option value="fixo" <?= (isset($dados['tipo_comissao']) && $dados['tipo_comissao'] == 'fixo') ? 'selected' : '' ?>>Fixo por serviço (R$)</option>
+                        <option value="valor_fixo" <?= (isset($dados['tipo_comissao']) && $dados['tipo_comissao'] == 'valor_fixo') ? 'selected' : '' ?>>Fixo por serviço (R$)</option>
                     </select>
                 </div>
                 <div class="form-group col-md-4">
@@ -59,7 +59,7 @@ ob_start();
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Salvar</button>
-                <a href="?page=profissionais&action=list" class="btn btn-secondary">Cancelar</a>
+                <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

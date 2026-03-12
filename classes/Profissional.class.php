@@ -83,6 +83,19 @@ class Profissional {
     }
 
     /**
+     * Verifica se o profissional tem agendamentos não-cancelados
+     */
+    public function hasAgendamentosAtivos($id) {
+        $sql = "SELECT COUNT(*) as total FROM agenda
+                WHERE profissional_id = :id
+                  AND company_id = :company_id
+                  AND status != 'cancelado'";
+        $params = [':id' => $id, ':company_id' => $this->company_id];
+        $result = $this->db->queryOne($sql, $params);
+        return ((int)($result['total'] ?? 0)) > 0;
+    }
+
+    /**
      * Deletar profissional
      */
     public function delete($id) {
@@ -113,25 +126,36 @@ class Profissional {
         $sql = "SELECT * FROM profissionais WHERE company_id = :company_id";
         $params = [':company_id' => $this->company_id];
 
-        // Filtro por status
-        if (isset($filtros['status'])) {
+        if (isset($filtros['status']) && $filtros['status'] !== '') {
             $sql .= " AND status = :status";
             $params[':status'] = $filtros['status'];
         }
 
-        // Filtro por nome
-        if (isset($filtros['nome']) && !empty($filtros['nome'])) {
+        if (isset($filtros['nome']) && $filtros['nome'] !== '') {
             $sql .= " AND nome LIKE :nome";
             $params[':nome'] = '%' . $filtros['nome'] . '%';
         }
 
-        // Filtro por função
-        if (isset($filtros['funcao']) && !empty($filtros['funcao'])) {
+        if (isset($filtros['funcao']) && $filtros['funcao'] !== '') {
             $sql .= " AND funcao = :funcao";
             $params[':funcao'] = $filtros['funcao'];
         }
 
-        $sql .= " ORDER BY nome ASC";
+        $allowed_sort = ['id', 'nome', 'funcao', 'comissao', 'status'];
+        $sort_col = (isset($filtros['orderby']) && in_array($filtros['orderby'], $allowed_sort))
+            ? $filtros['orderby'] : 'nome';
+        $sort_dir = (isset($filtros['order']) && strtolower($filtros['order']) === 'desc') ? 'DESC' : 'ASC';
+        $sql .= " ORDER BY $sort_col $sort_dir";
+
+        if (isset($filtros['limit'], $filtros['offset'])) {
+            $sql .= " LIMIT :limit OFFSET :offset";
+            $stmt = $this->db->getConnection()->prepare($sql);
+            foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+            $stmt->bindValue(':limit',  (int)$filtros['limit'],  PDO::PARAM_INT);
+            $stmt->bindValue(':offset', (int)$filtros['offset'], PDO::PARAM_INT);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        }
 
         return $this->db->query($sql, $params);
     }
@@ -143,13 +167,18 @@ class Profissional {
         $sql = "SELECT COUNT(*) as total FROM profissionais WHERE company_id = :company_id";
         $params = [':company_id' => $this->company_id];
 
-        if (isset($filtros['status'])) {
+        if (isset($filtros['status']) && $filtros['status'] !== '') {
             $sql .= " AND status = :status";
             $params[':status'] = $filtros['status'];
         }
 
+        if (isset($filtros['nome']) && $filtros['nome'] !== '') {
+            $sql .= " AND nome LIKE :nome";
+            $params[':nome'] = '%' . $filtros['nome'] . '%';
+        }
+
         $result = $this->db->queryOne($sql, $params);
-        return $result['total'] ?? 0;
+        return (int)($result['total'] ?? 0);
     }
 
     /**

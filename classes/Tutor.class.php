@@ -99,6 +99,24 @@ class Tutor {
     }
 
     /**
+     * Verificar se tutor possui vínculos (pets, agendamentos ou vendas)
+     */
+    public function hasVinculos($id) {
+        $sql = "SELECT
+                    (SELECT COUNT(*) FROM pets     WHERE tutor_id = :id1 AND company_id = :company_id1) +
+                    (SELECT COUNT(*) FROM agenda   WHERE tutor_id = :id2 AND company_id = :company_id2) +
+                    (SELECT COUNT(*) FROM vendas   WHERE tutor_id = :id3 AND company_id = :company_id3)
+                AS total";
+        $params = [
+            ':id1' => $id, ':company_id1' => $this->company_id,
+            ':id2' => $id, ':company_id2' => $this->company_id,
+            ':id3' => $id, ':company_id3' => $this->company_id,
+        ];
+        $result = $this->db->queryOne($sql, $params);
+        return ($result['total'] ?? 0) > 0;
+    }
+
+    /**
      * Deletar tutor
      */
     public function delete($id) {
@@ -123,70 +141,80 @@ class Tutor {
     }
 
     /**
-     * Buscar todos os tutores
+     * Monta cláusulas WHERE/AND compartilhadas entre getAll() e count()
      */
-    public function getAll($filtros = []) {
-        $sql = "SELECT * FROM tutors WHERE company_id = :company_id";
-        $params = [':company_id' => $this->company_id];
+    private function buildWhere($filtros, &$params) {
+        $where = "WHERE company_id = :company_id";
 
-        // Filtro por status
-        if (isset($filtros['status'])) {
-            $sql .= " AND status = :status";
+        if (isset($filtros['status']) && $filtros['status'] !== '') {
+            $where .= " AND status = :status";
             $params[':status'] = $filtros['status'];
         }
 
-        // Filtro por nome
-        if (isset($filtros['nome']) && !empty($filtros['nome'])) {
-            $sql .= " AND nome LIKE :nome";
+        if (isset($filtros['nome']) && $filtros['nome'] !== '') {
+            $where .= " AND nome LIKE :nome";
             $params[':nome'] = '%' . $filtros['nome'] . '%';
         }
 
-        // Filtro por telefone
-        if (isset($filtros['telefone']) && !empty($filtros['telefone'])) {
-            $sql .= " AND telefone LIKE :telefone";
+        if (isset($filtros['telefone']) && $filtros['telefone'] !== '') {
+            $where .= " AND telefone LIKE :telefone";
             $params[':telefone'] = '%' . $filtros['telefone'] . '%';
         }
+
+        if (isset($filtros['com_vinculo']) && $filtros['com_vinculo'] !== '') {
+            // Usa tutors.company_id para evitar placeholder duplicado (:company_id)
+            // com PDO::ATTR_EMULATE_PREPARES = false
+            $exists = "EXISTS (SELECT 1 FROM pets   WHERE tutor_id = tutors.id AND company_id = tutors.company_id)
+                    OR EXISTS (SELECT 1 FROM agenda WHERE tutor_id = tutors.id AND company_id = tutors.company_id)
+                    OR EXISTS (SELECT 1 FROM vendas WHERE tutor_id = tutors.id AND company_id = tutors.company_id)";
+            if ($filtros['com_vinculo'] === '1') {
+                $where .= " AND ($exists)";
+            } else {
+                $where .= " AND NOT ($exists)";
+            }
+        }
+
+        return $where;
+    }
+
+    /**
+     * Buscar todos os tutores
+     */
+    public function getAll($filtros = []) {
+        $params = [':company_id' => $this->company_id];
+        $where  = $this->buildWhere($filtros, $params);
 
         $allowed_sort = ['id', 'nome', 'telefone', 'email', 'status'];
         $sort_col = (isset($filtros['orderby']) && in_array($filtros['orderby'], $allowed_sort)) ? $filtros['orderby'] : 'id';
         $sort_dir = (isset($filtros['order']) && strtolower($filtros['order']) === 'desc') ? 'DESC' : 'ASC';
-        $sql .= " ORDER BY $sort_col $sort_dir";
 
-        // Paginação
+        $sql = "SELECT * FROM tutors $where ORDER BY $sort_col $sort_dir";
+
         if (isset($filtros['limit']) && isset($filtros['offset'])) {
             $sql .= " LIMIT :limit OFFSET :offset";
             $stmt = $this->db->getConnection()->prepare($sql);
             foreach ($params as $key => $value) {
                 $stmt->bindValue($key, $value);
             }
-            $stmt->bindValue(':limit', (int)$filtros['limit'], PDO::PARAM_INT);
+            $stmt->bindValue(':limit',  (int)$filtros['limit'],  PDO::PARAM_INT);
             $stmt->bindValue(':offset', (int)$filtros['offset'], PDO::PARAM_INT);
             $stmt->execute();
-            return $stmt->fetchAll();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
         }
 
         return $this->db->query($sql, $params);
     }
 
     /**
-     * Contar total de tutores
+     * Contar total de tutores (respeita os mesmos filtros de getAll)
      */
     public function count($filtros = []) {
-        $sql = "SELECT COUNT(*) as total FROM tutors WHERE company_id = :company_id";
         $params = [':company_id' => $this->company_id];
+        $where  = $this->buildWhere($filtros, $params);
 
-        if (isset($filtros['status'])) {
-            $sql .= " AND status = :status";
-            $params[':status'] = $filtros['status'];
-        }
-
-        if (isset($filtros['nome']) && !empty($filtros['nome'])) {
-            $sql .= " AND nome LIKE :nome";
-            $params[':nome'] = '%' . $filtros['nome'] . '%';
-        }
-
+        $sql    = "SELECT COUNT(*) as total FROM tutors $where";
         $result = $this->db->queryOne($sql, $params);
-        return $result['total'] ?? 0;
+        return (int)($result['total'] ?? 0);
     }
 
     /**

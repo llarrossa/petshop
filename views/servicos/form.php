@@ -6,7 +6,7 @@ ob_start();
 
 <div class="page-header">
     <h2><?= $isEdit ? 'Editar' : 'Novo' ?> Serviço</h2>
-    <a href="?page=servicos&action=list" class="btn btn-secondary">← Voltar</a>
+    <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">← Voltar</a>
 </div>
 
 <div class="card">
@@ -58,7 +58,7 @@ ob_start();
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Salvar</button>
-                <a href="?page=servicos&action=list" class="btn btn-secondary">Cancelar</a>
+                <a href="<?= htmlspecialchars($back_url) ?>" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

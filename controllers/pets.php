@@ -11,28 +11,31 @@ $action = $_GET['action'] ?? 'list';
 $pet = new Pet();
 $tutorObj = new Tutor();
 
+// URL de retorno à listagem com filtros preservados
+$back_url = '?' . ($_SESSION['pets_qs'] ?? 'page=pets&action=list');
+
 switch ($action) {
     case 'list':
-        // Filtros
-        $busca = $_GET['busca'] ?? '';
+        $busca    = $_GET['busca']    ?? '';
         $tutor_id = $_GET['tutor_id'] ?? '';
-        $especie = $_GET['especie'] ?? '';
+        $especie  = $_GET['especie']  ?? '';
 
-        // Buscar pets
-        $where = [];
-        $params = [];
+        $where  = [];
+        $params = [':company_id' => getCompanyId()];
 
-        if ($busca) {
-            $where[] = "(p.nome LIKE :busca OR p.raca LIKE :busca)";
-            $params[':busca'] = "%$busca%";
+        // :busca não pode repetir com ATTR_EMULATE_PREPARES=false — usar params distintos
+        if ($busca !== '') {
+            $where[] = "(p.nome LIKE :busca_nome OR p.raca LIKE :busca_raca)";
+            $params[':busca_nome'] = "%$busca%";
+            $params[':busca_raca'] = "%$busca%";
         }
 
-        if ($tutor_id) {
+        if ($tutor_id !== '') {
             $where[] = "p.tutor_id = :tutor_id";
             $params[':tutor_id'] = $tutor_id;
         }
 
-        if ($especie) {
+        if ($especie !== '') {
             $where[] = "p.especie = :especie";
             $params[':especie'] = $especie;
         }
@@ -49,20 +52,44 @@ switch ($action) {
             'status'     => 'p.status',
         ];
         $orderby_key = $_GET['orderby'] ?? 'id';
-        $sort_col = $sort_col_map[$orderby_key] ?? 'p.id';
-        $sort_dir = (isset($_GET['order']) && strtolower($_GET['order']) === 'desc') ? 'DESC' : 'ASC';
+        $sort_col    = $sort_col_map[$orderby_key] ?? 'p.id';
+        $sort_dir    = (isset($_GET['order']) && strtolower($_GET['order']) === 'desc') ? 'DESC' : 'ASC';
+
+        // Persiste filtros na sessão
+        $qs_params = ['page' => 'pets', 'action' => 'list'];
+        foreach (['busca', 'tutor_id', 'especie', 'orderby', 'order', 'p'] as $k) {
+            if (isset($_GET[$k]) && $_GET[$k] !== '') $qs_params[$k] = $_GET[$k];
+        }
+        $_SESSION['pets_qs'] = http_build_query($qs_params);
+        $back_url = '?' . $_SESSION['pets_qs'];
+
+        // Paginação
+        $db           = Database::getInstance();
+        $por_pagina   = 20;
+        $pagina_atual = max(1, (int)($_GET['p'] ?? 1));
+
+        $sql_count = "SELECT COUNT(*) as total
+                      FROM pets p
+                      LEFT JOIN tutors t ON p.tutor_id = t.id
+                      WHERE p.company_id = :company_id $whereClause";
+        $total        = (int)($db->queryOne($sql_count, $params)['total'] ?? 0);
+        $total_paginas = (int)ceil($total / $por_pagina);
+        $offset       = ($pagina_atual - 1) * $por_pagina;
 
         $sql = "SELECT p.*, t.nome as tutor_nome, t.telefone as tutor_telefone
                 FROM pets p
                 LEFT JOIN tutors t ON p.tutor_id = t.id
                 WHERE p.company_id = :company_id $whereClause
-                ORDER BY $sort_col $sort_dir";
+                ORDER BY $sort_col $sort_dir
+                LIMIT :limit OFFSET :offset";
 
-        $params[':company_id'] = getCompanyId();
-        $db = Database::getInstance();
-        $pets = $db->query($sql, $params);
+        $stmt = $db->getConnection()->prepare($sql);
+        foreach ($params as $k => $v) $stmt->bindValue($k, $v);
+        $stmt->bindValue(':limit',  $por_pagina, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset,     PDO::PARAM_INT);
+        $stmt->execute();
+        $pets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Buscar tutores para o filtro
         $tutores = $tutorObj->getAll();
 
         include __DIR__ . '/../views/pets/list.php';
@@ -70,30 +97,29 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $pet->tutor_id = sanitize($_POST['tutor_id']);
-            $pet->nome = sanitize($_POST['nome']);
-            $pet->especie = sanitize($_POST['especie']);
-            $pet->raca = sanitize($_POST['raca']) ?: null;
-            $pet->sexo = sanitize($_POST['sexo']);
+            $pet->tutor_id       = sanitize($_POST['tutor_id']);
+            $pet->nome           = sanitize($_POST['nome']);
+            $pet->especie        = sanitize($_POST['especie']);
+            $pet->raca           = sanitize($_POST['raca']) ?: null;
+            $pet->sexo           = sanitize($_POST['sexo']);
             $pet->data_nascimento = sanitize($_POST['data_nascimento']) ?: null;
-            $pet->peso = sanitize($_POST['peso']) ?: null;
-            $pet->cor = sanitize($_POST['cor']) ?: null;
-            $pet->porte = sanitize($_POST['porte']) ?: null;
-            $pet->observacoes = sanitize($_POST['observacoes']) ?: null;
-            $pet->status = 'ativo';
+            $pet->peso           = sanitize($_POST['peso']) ?: null;
+            $pet->cor            = sanitize($_POST['cor']) ?: null;
+            $pet->porte          = sanitize($_POST['porte']) ?: null;
+            $pet->observacoes    = sanitize($_POST['observacoes']) ?: null;
+            $pet->status         = 'ativo';
 
             if ($pet->create()) {
                 $_SESSION['success'] = 'Pet cadastrado com sucesso!';
-                header('Location: ?page=pets&action=list');
+                header('Location: ' . $back_url);
                 exit;
             } else {
                 $_SESSION['error'] = 'Erro ao cadastrar pet.';
             }
         }
 
-        // Buscar tutores para o select
         $tutores = $tutorObj->getAll();
-        $dados = [];
+        $dados   = [];
         include __DIR__ . '/../views/pets/form.php';
         break;
 
@@ -101,22 +127,22 @@ switch ($action) {
         $id = (int)$_GET['id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $pet->id = $id;
-            $pet->tutor_id = sanitize($_POST['tutor_id']);
-            $pet->nome = sanitize($_POST['nome']);
-            $pet->especie = sanitize($_POST['especie']);
-            $pet->raca = sanitize($_POST['raca']) ?: null;
-            $pet->sexo = sanitize($_POST['sexo']);
+            $pet->id             = $id;
+            $pet->tutor_id       = sanitize($_POST['tutor_id']);
+            $pet->nome           = sanitize($_POST['nome']);
+            $pet->especie        = sanitize($_POST['especie']);
+            $pet->raca           = sanitize($_POST['raca']) ?: null;
+            $pet->sexo           = sanitize($_POST['sexo']);
             $pet->data_nascimento = sanitize($_POST['data_nascimento']) ?: null;
-            $pet->peso = sanitize($_POST['peso']) ?: null;
-            $pet->cor = sanitize($_POST['cor']) ?: null;
-            $pet->porte = sanitize($_POST['porte']) ?: null;
-            $pet->observacoes = sanitize($_POST['observacoes']) ?: null;
-            $pet->status = sanitize($_POST['status']);
+            $pet->peso           = sanitize($_POST['peso']) ?: null;
+            $pet->cor            = sanitize($_POST['cor']) ?: null;
+            $pet->porte          = sanitize($_POST['porte']) ?: null;
+            $pet->observacoes    = sanitize($_POST['observacoes']) ?: null;
+            $pet->status         = sanitize($_POST['status']);
 
             if ($pet->update()) {
                 $_SESSION['success'] = 'Pet atualizado com sucesso!';
-                header('Location: ?page=pets&action=list');
+                header('Location: ' . $back_url);
                 exit;
             } else {
                 $_SESSION['error'] = 'Erro ao atualizar pet.';
@@ -126,27 +152,26 @@ switch ($action) {
         $dados = $pet->getById($id);
         if (!$dados) {
             $_SESSION['error'] = 'Pet não encontrado.';
-            header('Location: ?page=pets&action=list');
+            header('Location: ' . $back_url);
             exit;
         }
 
-        // Buscar tutores para o select
         $tutores = $tutorObj->getAll();
         include __DIR__ . '/../views/pets/form.php';
         break;
 
     case 'view':
-        $id = (int)$_GET['id'];
+        $id    = (int)$_GET['id'];
         $dados = $pet->getById($id);
 
         if (!$dados) {
             $_SESSION['error'] = 'Pet não encontrado.';
-            header('Location: ?page=pets&action=list');
+            header('Location: ' . $back_url);
             exit;
         }
 
-        // Buscar prontuário
-        $prontuario = $pet->getProntuario($id);
+        $prontuario  = $pet->getProntuario($id);
+        $agendamentos = $pet->getHistoricoAgendamentos($id);
 
         include __DIR__ . '/../views/pets/view.php';
         break;
@@ -160,20 +185,16 @@ switch ($action) {
             $_SESSION['error'] = 'Erro ao remover pet. Verifique se não há vínculos.';
         }
 
-        header('Location: ?page=pets&action=list');
+        header('Location: ' . $back_url);
         exit;
         break;
 
     case 'buscar':
-        // AJAX - Buscar pets
-        $termo = $_GET['termo'] ?? '';
+        $termo          = $_GET['termo'] ?? '';
         $tutor_id_busca = $_GET['tutor_id'] ?? '';
 
-        $where_busca = "p.company_id = :company_id AND p.status = 'ativo'";
-        $params_busca = [
-            ':company_id' => getCompanyId(),
-            ':termo' => "%$termo%"
-        ];
+        $where_busca  = "p.company_id = :company_id AND p.status = 'ativo'";
+        $params_busca = [':company_id' => getCompanyId()];
 
         if ($tutor_id_busca) {
             $where_busca .= " AND p.tutor_id = :tutor_id";
@@ -182,8 +203,7 @@ switch ($action) {
 
         if ($termo !== '') {
             $where_busca .= " AND (p.nome LIKE :termo OR t.nome LIKE :termo)";
-        } else {
-            unset($params_busca[':termo']);
+            $params_busca[':termo'] = "%$termo%";
         }
 
         $sql = "SELECT p.*, t.nome as tutor_nome
@@ -193,7 +213,7 @@ switch ($action) {
                 ORDER BY p.nome ASC
                 LIMIT 20";
 
-        $db = Database::getInstance();
+        $db      = Database::getInstance();
         $results = $db->query($sql, $params_busca);
 
         header('Content-Type: application/json');
