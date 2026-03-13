@@ -61,7 +61,7 @@
         /* ── NAV ── */
         nav {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(255,255,255,.97);
+            background: rgb(231 240 247);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
         }
@@ -94,7 +94,7 @@
         .hero::after {
             content: '';
             position: absolute; bottom: -1px; left: 0; right: 0;
-            height: 80px; background: var(--white);
+            height: 80px; background: #e7f0f7;
             clip-path: ellipse(55% 100% at 50% 100%);
         }
         .hero-inner {
@@ -161,7 +161,7 @@
         .mockup-row:first-child { background: #EFF6FF; border-color: #BFDBFE; }
 
         /* ── SEÇÃO ── */
-        section { padding: 88px 0; }
+        section { padding: 88px 0; background: #e7f0f7 }
         .section-eyebrow {
             display: inline-block; font-size: 0.75rem; font-weight: 700;
             letter-spacing: .1em; text-transform: uppercase;
@@ -176,12 +176,12 @@
         .text-center .section-sub { margin: 0 auto; }
 
         /* ── PROBLEMAS ── */
-        .problems { background: var(--bg); }
+        .problems { background: #e7f0f7 }
         .problems-inner { display: grid; grid-template-columns: 1fr 1fr; gap: 72px; align-items: center; }
         .problems-list { display: flex; flex-direction: column; gap: 14px; margin-top: 36px; }
         .problem-item {
             display: flex; align-items: flex-start; gap: 14px;
-            background: white; border: 1px solid var(--border);
+            background: #f7f7f7; border: 1px solid var(--border);
             border-left: 4px solid #FCA5A5; border-radius: 10px;
             padding: 14px 18px; transition: box-shadow .2s;
         }
@@ -202,7 +202,7 @@
             gap: 24px; margin-top: 56px;
         }
         .benefit-card {
-            background: white; border: 1px solid var(--border);
+            background: #f7f7f7; border: 1px solid var(--border);
             border-radius: 16px; padding: 32px 28px;
             transition: box-shadow .2s, transform .2s;
         }
@@ -216,7 +216,7 @@
         .benefit-card p { color: var(--muted); font-size: 0.875rem; line-height: 1.6; }
 
         /* ── DEMO ── */
-        .demo { background: var(--bg); }
+        .demo { background: #e7f0f7; }
         .demo-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; margin-top: 56px; }
         .demo-card {
             background: white; border: 1px solid var(--border);
@@ -247,7 +247,7 @@
             gap: 24px; margin-top: 56px; align-items: start;
         }
         .plan-card {
-            background: white; border: 2px solid var(--border);
+            background: #f7f7f7; border: 2px solid var(--border);
             border-radius: 20px; padding: 36px 32px;
             position: relative; transition: box-shadow .2s;
         }
@@ -277,10 +277,10 @@
         .plan-cta { width: 100%; justify-content: center; border-radius: 10px; padding: 13px; }
 
         /* ── DEPOIMENTOS ── */
-        .testimonials { background: var(--bg); }
+        .testimonials { background: #e7f0f7; }
         .testimonials-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 24px; margin-top: 56px; }
         .testimonial-card {
-            background: white; border: 1px solid var(--border);
+            background: #f7f7f7; border: 1px solid var(--border);
             border-radius: 16px; padding: 32px; transition: box-shadow .2s;
         }
         .testimonial-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,.07); }
@@ -352,7 +352,9 @@
 <!-- ══ NAV ══ -->
 <nav>
     <div class="container nav-inner">
-        <a href="#" class="nav-logo">🐾 Paw<span>fy</span></a>
+        <a href="#" class="nav-logo">
+            <img src="public/img/primary-logo.png" alt="Pawfy" style="height:69px;display:block;">
+        </a>
         <ul class="nav-links">
             <li><a href="#problemas">Por que o Pawfy?</a></li>
             <li><a href="#beneficios">Funcionalidades</a></li>
@@ -675,7 +677,9 @@
     <div class="container">
         <div class="footer-grid">
             <div class="footer-brand">
-                <a href="#" style="font-size:1.3rem;font-weight:800;color:white;">🐾 Pawfy</a>
+                <a href="#">
+                    <img src="public/img/primary-logo.png" alt="Pawfy" style="height:32px;display:block;filter:brightness(0) invert(1);">
+                </a>
                 <p>Sistema de gestão completo para pet shops. Agenda, vendas, estoque e financeiro em um único lugar.</p>
                 <div class="footer-social">
                     <a href="#" title="Instagram">📷</a>

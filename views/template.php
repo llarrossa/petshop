@@ -16,7 +16,9 @@
         <aside class="sidebar">
             <button class="sidebar-close" aria-label="Fechar menu">✕</button>
             <div class="logo">
-                <h2>🐾 Pawfy</h2>
+                <a href="?page=dashboard">
+                    <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height:36px;max-width:100%;display:block;">
+                </a>
                 <p><?= $_SESSION['company_name'] ?? 'Sistema' ?></p>
             </div>
 

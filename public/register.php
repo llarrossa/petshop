@@ -330,7 +330,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="card">
 
         <div class="logo">
-            <a href="<?= APP_URL ?>">🐾 Paw<span>fy</span></a>
+            <a href="<?= APP_URL ?>">
+                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height:48px;max-width:180px;">
+            </a>
             <p>7 dias grátis, sem cartão de crédito</p>
         </div>
 
