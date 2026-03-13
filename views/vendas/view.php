@@ -6,10 +6,14 @@ ob_start();
 <div class="page-header">
     <h2>Venda #<?= $dados['id'] ?></h2>
     <div>
+        <?php
+        $return_url = htmlspecialchars($_GET['return_url'] ?? '?page=vendas&action=list');
+        $return_url_enc = urlencode($_GET['return_url'] ?? '?page=vendas&action=list');
+        ?>
         <?php if ($dados['status'] == 'finalizada'): ?>
-        <a href="?page=vendas&action=cancelar&id=<?= $dados['id'] ?>" class="btn btn-danger" onclick="return confirm('Cancelar esta venda? O estoque será revertido.')">✖️ Cancelar Venda</a>
+        <a href="?page=vendas&action=cancelar&id=<?= $dados['id'] ?>&return_url=<?= $return_url_enc ?>" class="btn btn-danger" onclick="return confirm('Cancelar esta venda? O estoque será revertido.')">✖️ Cancelar Venda</a>
         <?php endif; ?>
-        <a href="?page=vendas&action=list" class="btn btn-secondary">← Voltar</a>
+        <a href="<?= $return_url ?>" class="btn btn-secondary">← Voltar</a>
     </div>
 </div>
 
@@ -21,13 +25,9 @@ ob_start();
                 <label>Data/Hora</label>
                 <p><?= date('d/m/Y H:i', strtotime($dados['data'])) ?></p>
             </div>
-            <div class="form-group col-md-4">
+            <div class="form-group col-md-5">
                 <label>Cliente</label>
                 <p><?= htmlspecialchars($dados['tutor_nome'] ?? 'Cliente avulso') ?></p>
-            </div>
-            <div class="form-group col-md-3">
-                <label>Pet</label>
-                <p><?= htmlspecialchars($dados['pet_nome'] ?? '-') ?></p>
             </div>
             <div class="form-group col-md-2">
                 <label>Status</label>

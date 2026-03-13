@@ -21,19 +21,23 @@ $action = $_GET['action'] ?? 'list';
 switch ($action) {
     case 'list':
         $filtros = [];
-        if (isset($_GET['data_inicio']) && $_GET['data_inicio'] !== '') {
-            $filtros['data_inicio'] = sanitize($_GET['data_inicio']);
-        }
-        if (isset($_GET['data_fim']) && $_GET['data_fim'] !== '') {
-            $filtros['data_fim'] = sanitize($_GET['data_fim']);
-        }
-        if (isset($_GET['status']) && $_GET['status'] !== '') {
-            $filtros['status'] = sanitize($_GET['status']);
-        }
+        if (!empty($_GET['data_inicio'])) $filtros['data_inicio'] = sanitize($_GET['data_inicio']);
+        if (!empty($_GET['data_fim']))    $filtros['data_fim']    = sanitize($_GET['data_fim']);
+        if (!empty($_GET['status']))      $filtros['status']      = sanitize($_GET['status']);
+        if (!empty($_GET['cliente']))     $filtros['cliente']     = sanitize($_GET['cliente']);
+
         if (!isset($filtros['data_inicio'])) {
             $filtros['data_inicio'] = date('Y-m-01');
-            $filtros['data_fim'] = date('Y-m-t');
+            $filtros['data_fim']    = date('Y-m-t');
         }
+
+        $total         = $venda->count($filtros);
+        $pagina_atual  = max(1, (int)($_GET['pg'] ?? 1));
+        $total_paginas = max(1, (int)ceil($total / ITEMS_PER_PAGE));
+        $pagina_atual  = min($pagina_atual, $total_paginas);
+        $filtros['limit']  = ITEMS_PER_PAGE;
+        $filtros['offset'] = ($pagina_atual - 1) * ITEMS_PER_PAGE;
+
         $vendas = $venda->getAll($filtros);
         $resumo = $venda->getFaturamentoPorPeriodo(
             $filtros['data_inicio'],
@@ -114,12 +118,14 @@ switch ($action) {
 
     case 'cancelar':
         $id = (int)$_GET['id'];
+        $return_url = $_GET['return_url'] ?? '?page=vendas&action=list';
+
         if ($venda->cancelar($id)) {
             $_SESSION['success'] = 'Venda cancelada com sucesso!';
         } else {
             $_SESSION['error'] = 'Erro ao cancelar venda.';
         }
-        header('Location: ?page=vendas&action=list');
+        header('Location: ' . $return_url);
         exit;
         break;
 

@@ -21,18 +21,23 @@ $action = $_GET['action'] ?? 'list';
 switch ($action) {
     case 'list':
         $filtros = [];
-        if (isset($_GET['nome'])) {
-            $filtros['nome'] = sanitize($_GET['nome']);
-        }
-        if (isset($_GET['categoria'])) {
-            $filtros['categoria'] = sanitize($_GET['categoria']);
-        }
-        if (isset($_GET['estoque_baixo']) && $_GET['estoque_baixo'] == '1') {
+        if (!empty($_GET['nome']))       $filtros['nome']       = sanitize($_GET['nome']);
+        if (!empty($_GET['sku']))        $filtros['sku']        = sanitize($_GET['sku']);
+        if (!empty($_GET['categoria']))  $filtros['categoria']  = sanitize($_GET['categoria']);
+        if (!empty($_GET['status']))     $filtros['status']     = sanitize($_GET['status']);
+        if (!empty($_GET['estoque_baixo']) && $_GET['estoque_baixo'] == '1') {
             $filtros['estoque_baixo'] = true;
         }
 
         $filtros['orderby'] = $_GET['orderby'] ?? 'id';
-        $filtros['order']   = $_GET['order'] ?? 'asc';
+        $filtros['order']   = $_GET['order']   ?? 'asc';
+
+        $total         = $produto->count($filtros);
+        $pagina_atual  = max(1, (int)($_GET['pg'] ?? 1));
+        $total_paginas = max(1, (int)ceil($total / ITEMS_PER_PAGE));
+        $pagina_atual  = min($pagina_atual, $total_paginas);
+        $filtros['limit']  = ITEMS_PER_PAGE;
+        $filtros['offset'] = ($pagina_atual - 1) * ITEMS_PER_PAGE;
 
         $produtos = $produto->getAll($filtros);
         $categorias = $produto->getCategorias();
@@ -41,34 +46,48 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $produto->nome = sanitize($_POST['nome']);
-            $produto->descricao = sanitize($_POST['descricao'] ?? '');
-            $produto->sku = sanitize($_POST['sku'] ?? '');
-            $produto->categoria = sanitize($_POST['categoria'] ?? '');
-            $produto->preco_venda = (float)$_POST['preco_venda'];
-            $produto->preco_custo = (float)($_POST['preco_custo'] ?? 0);
-            $produto->estoque_atual = (int)($_POST['estoque_atual'] ?? 0);
-            $produto->estoque_minimo = (int)($_POST['estoque_minimo'] ?? 0);
-            $produto->unidade = sanitize($_POST['unidade'] ?? 'UN');
-            $produto->status = 'ativo';
+            $sku = sanitize($_POST['sku'] ?? '');
 
-            if ($produto->create()) {
-                // Registrar movimentação inicial de estoque se houver
-                if ($produto->estoque_atual > 0) {
-                    $produto->registrarMovimentacao(
-                        $produto->id,
-                        'entrada',
-                        $produto->estoque_atual,
-                        'Estoque inicial',
-                        $_SESSION['user_id']
-                    );
-                }
-
-                $_SESSION['success'] = 'Produto cadastrado com sucesso!';
-                header('Location: ?page=produtos&action=list');
-                exit;
+            if (!empty($sku) && $produto->skuExiste($sku)) {
+                $_SESSION['error'] = 'Já existe um produto cadastrado com este SKU.';
+                // Preserva os dados preenchidos para reexibir o formulário
+                $dados = [
+                    'nome'           => $_POST['nome']           ?? '',
+                    'sku'            => $_POST['sku']            ?? '',
+                    'categoria'      => $_POST['categoria']      ?? '',
+                    'preco_venda'    => $_POST['preco_venda']    ?? '',
+                    'preco_custo'    => $_POST['preco_custo']    ?? '',
+                    'estoque_atual'  => $_POST['estoque_atual']  ?? 0,
+                    'estoque_minimo' => $_POST['estoque_minimo'] ?? 0,
+                    'unidade'        => $_POST['unidade']        ?? 'UN',
+                    'descricao'      => $_POST['descricao']      ?? '',
+                ];
             } else {
-                $_SESSION['error'] = 'Erro ao cadastrar produto.';
+                $produto->nome         = sanitize($_POST['nome']);
+                $produto->descricao    = sanitize($_POST['descricao'] ?? '');
+                $produto->sku          = $sku;
+                $produto->categoria    = sanitize($_POST['categoria'] ?? '');
+                $produto->preco_venda  = (float)$_POST['preco_venda'];
+                $produto->preco_custo  = (float)($_POST['preco_custo'] ?? 0);
+                $produto->estoque_atual  = (int)($_POST['estoque_atual'] ?? 0);
+                $produto->estoque_minimo = (int)($_POST['estoque_minimo'] ?? 0);
+                $produto->unidade = sanitize($_POST['unidade'] ?? 'UN');
+                $produto->status  = 'ativo';
+
+                if ($produto->create()) {
+                    if ($produto->estoque_atual > 0) {
+                        $produto->registrarMovimentacao(
+                            $produto->id, 'entrada', $produto->estoque_atual,
+                            'Estoque inicial', $_SESSION['user_id']
+                        );
+                    }
+                    $_SESSION['success'] = 'Produto cadastrado com sucesso!';
+                    $return_url = $_POST['return_url'] ?? '?page=produtos&action=list';
+                    header('Location: ' . $return_url);
+                    exit;
+                } else {
+                    $_SESSION['error'] = 'Erro ao cadastrar produto.';
+                }
             }
         }
 
@@ -87,23 +106,30 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $produto->id = $id;
-            $produto->nome = sanitize($_POST['nome']);
-            $produto->descricao = sanitize($_POST['descricao'] ?? '');
-            $produto->sku = sanitize($_POST['sku'] ?? '');
-            $produto->categoria = sanitize($_POST['categoria'] ?? '');
-            $produto->preco_venda = (float)$_POST['preco_venda'];
-            $produto->preco_custo = (float)($_POST['preco_custo'] ?? 0);
-            $produto->estoque_minimo = (int)($_POST['estoque_minimo'] ?? 0);
-            $produto->unidade = sanitize($_POST['unidade'] ?? 'UN');
-            $produto->status = sanitize($_POST['status']);
+            $sku = sanitize($_POST['sku'] ?? '');
 
-            if ($produto->update()) {
-                $_SESSION['success'] = 'Produto atualizado com sucesso!';
-                header('Location: ?page=produtos&action=list');
-                exit;
+            if (!empty($sku) && $produto->skuExiste($sku, $id)) {
+                $_SESSION['error'] = 'Já existe outro produto cadastrado com este SKU.';
             } else {
-                $_SESSION['error'] = 'Erro ao atualizar produto.';
+                $produto->id           = $id;
+                $produto->nome         = sanitize($_POST['nome']);
+                $produto->descricao    = sanitize($_POST['descricao'] ?? '');
+                $produto->sku          = $sku;
+                $produto->categoria    = sanitize($_POST['categoria'] ?? '');
+                $produto->preco_venda  = (float)$_POST['preco_venda'];
+                $produto->preco_custo  = (float)($_POST['preco_custo'] ?? 0);
+                $produto->estoque_minimo = (int)($_POST['estoque_minimo'] ?? 0);
+                $produto->unidade      = sanitize($_POST['unidade'] ?? 'UN');
+                $produto->status       = sanitize($_POST['status']);
+
+                if ($produto->update()) {
+                    $_SESSION['success'] = 'Produto atualizado com sucesso!';
+                    $return_url = $_POST['return_url'] ?? '?page=produtos&action=list';
+                    header('Location: ' . $return_url);
+                    exit;
+                } else {
+                    $_SESSION['error'] = 'Erro ao atualizar produto.';
+                }
             }
         }
 
@@ -128,6 +154,7 @@ switch ($action) {
 
     case 'delete':
         $id = (int)$_GET['id'];
+        $return_url = $_GET['return_url'] ?? '?page=produtos&action=list';
 
         if ($produto->delete($id)) {
             $_SESSION['success'] = 'Produto excluído com sucesso!';
@@ -135,7 +162,7 @@ switch ($action) {
             $_SESSION['error'] = 'Erro ao excluir produto. Verifique se existem registros vinculados.';
         }
 
-        header('Location: ?page=produtos&action=list');
+        header('Location: ' . $return_url);
         exit;
         break;
 
@@ -150,13 +177,17 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            $tipo = sanitize($_POST['tipo']);
+            $tipo      = sanitize($_POST['tipo']);
             $quantidade = (int)$_POST['quantidade'];
-            $motivo = sanitize($_POST['motivo']);
+            $motivo    = sanitize($_POST['motivo']);
 
-            if ($produto->registrarMovimentacao($id, $tipo, $quantidade, $motivo, $_SESSION['user_id'])) {
+            // Bloquear saída que tornaria estoque negativo sem confirmação explícita
+            if ($tipo === 'saida' && $quantidade > $dados['estoque_atual'] && empty($_POST['confirmar_negativo'])) {
+                $_SESSION['error'] = 'Operação cancelada: o estoque ficaria negativo. Confirme a operação no formulário.';
+            } elseif ($produto->registrarMovimentacao($id, $tipo, $quantidade, $motivo, $_SESSION['user_id'])) {
                 $_SESSION['success'] = 'Movimentação registrada com sucesso!';
-                header('Location: ?page=produtos&action=view&id=' . $id);
+                $return_url = $_POST['return_url'] ?? '?page=produtos&action=list';
+                header('Location: ?page=produtos&action=view&id=' . $id . '&return_url=' . urlencode($return_url));
                 exit;
             } else {
                 $_SESSION['error'] = 'Erro ao registrar movimentação.';

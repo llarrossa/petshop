@@ -1,11 +1,12 @@
 <?php
 $page_title = 'Movimentação de Estoque';
+$return_url = $_GET['return_url'] ?? '?page=produtos&action=list';
 ob_start();
 ?>
 
 <div class="page-header">
     <h2>Movimentação de Estoque</h2>
-    <a href="?page=produtos&action=view&id=<?= $dados['id'] ?>" class="btn btn-secondary">← Voltar</a>
+    <a href="?page=produtos&action=view&id=<?= $dados['id'] ?>&return_url=<?= urlencode($return_url) ?>" class="btn btn-secondary">← Voltar</a>
 </div>
 
 <div class="card">
@@ -23,7 +24,10 @@ ob_start();
         <h3>Registrar Movimentação</h3>
     </div>
     <div class="card-body">
-        <form method="POST" class="form">
+        <form method="POST" id="form-movimentacao" class="form">
+            <input type="hidden" name="return_url"        value="<?= htmlspecialchars($return_url) ?>">
+            <input type="hidden" name="confirmar_negativo" id="confirmar_negativo" value="">
+
             <div class="form-row">
                 <div class="form-group col-md-4">
                     <label for="tipo">Tipo *</label>
@@ -47,11 +51,38 @@ ob_start();
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Registrar</button>
-                <a href="?page=produtos&action=view&id=<?= $dados['id'] ?>" class="btn btn-secondary">Cancelar</a>
+                <a href="?page=produtos&action=view&id=<?= $dados['id'] ?>&return_url=<?= urlencode($return_url) ?>" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>
 </div>
+
+<script>
+(function () {
+    var estoqueAtual = <?= (int)$dados['estoque_atual'] ?>;
+    var unidade      = <?= json_encode($dados['unidade']) ?>;
+    var form         = document.getElementById('form-movimentacao');
+
+    form.addEventListener('submit', function (e) {
+        var tipo      = document.getElementById('tipo').value;
+        var quantidade = parseInt(document.getElementById('quantidade').value, 10) || 0;
+        var confirmar  = document.getElementById('confirmar_negativo');
+
+        // Só intercepta saída que gera estoque negativo e ainda não foi confirmada
+        if (tipo === 'saida' && quantidade > estoqueAtual && confirmar.value !== '1') {
+            e.preventDefault();
+            var estoqueApos = estoqueAtual - quantidade;
+            var msg = 'O estoque desse produto ficará negativo ('
+                    + estoqueApos + ' ' + unidade + '). Deseja continuar?';
+
+            if (window.confirm(msg)) {
+                confirmar.value = '1';
+                form.submit();
+            }
+        }
+    });
+})();
+</script>
 
 <?php
 $content = ob_get_clean();

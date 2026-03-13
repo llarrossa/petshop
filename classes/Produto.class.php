@@ -174,7 +174,7 @@ class Produto {
     }
 
     /**
-     * Contar total de produtos
+     * Contar total de produtos (respeita os mesmos filtros do getAll)
      */
     public function count($filtros = []) {
         $sql = "SELECT COUNT(*) as total FROM produtos WHERE company_id = :company_id";
@@ -185,12 +185,41 @@ class Produto {
             $params[':status'] = $filtros['status'];
         }
 
+        if (isset($filtros['nome']) && !empty($filtros['nome'])) {
+            $sql .= " AND nome LIKE :nome";
+            $params[':nome'] = '%' . $filtros['nome'] . '%';
+        }
+
+        if (isset($filtros['categoria']) && !empty($filtros['categoria'])) {
+            $sql .= " AND categoria = :categoria";
+            $params[':categoria'] = $filtros['categoria'];
+        }
+
+        if (isset($filtros['sku']) && !empty($filtros['sku'])) {
+            $sql .= " AND sku LIKE :sku";
+            $params[':sku'] = '%' . $filtros['sku'] . '%';
+        }
+
         if (isset($filtros['estoque_baixo']) && $filtros['estoque_baixo'] === true) {
             $sql .= " AND estoque_atual <= estoque_minimo";
         }
 
         $result = $this->db->queryOne($sql, $params);
         return $result['total'] ?? 0;
+    }
+
+    /**
+     * Verificar se SKU já existe (para outro produto da mesma empresa)
+     */
+    public function skuExiste($sku, $exclude_id = null) {
+        if (empty($sku)) return false;
+        $sql = "SELECT id FROM produtos WHERE company_id = :company_id AND sku = :sku";
+        $params = [':company_id' => $this->company_id, ':sku' => $sku];
+        if ($exclude_id !== null) {
+            $sql .= " AND id != :exclude_id";
+            $params[':exclude_id'] = $exclude_id;
+        }
+        return (bool) $this->db->queryOne($sql, $params);
     }
 
     /**

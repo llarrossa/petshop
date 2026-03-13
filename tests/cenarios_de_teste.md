@@ -792,7 +792,7 @@
   - Produto inserido com `estoque_atual = 50`
   - Movimentação de entrada registrada em `estoque_movimentacoes`
   - Aparece na listagem
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -802,7 +802,7 @@
   1. Filtrar por categoria `Alimentação`
 - **Resultado Esperado:**
   - Apenas produtos de alimentação exibidos
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -812,7 +812,7 @@
   1. Filtrar por `estoque_baixo=1`
 - **Resultado Esperado:**
   - Apenas produtos com estoque abaixo do mínimo listados
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -825,7 +825,7 @@
 - **Resultado Esperado:**
   - `estoque_atual` passa de `50` para `70`
   - Movimentação do tipo `entrada` registrada em `estoque_movimentacoes`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -837,7 +837,7 @@
 - **Resultado Esperado:**
   - `estoque_atual` passa de `70` para `65`
   - Movimentação do tipo `saida` registrada
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -857,7 +857,7 @@
   1. `?page=produtos&action=view&id={ID}`
 - **Resultado Esperado:**
   - Todas as movimentações (data, tipo, quantidade, motivo) exibidas em ordem cronológica
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -868,7 +868,7 @@
   2. Salvar
 - **Resultado Esperado:**
   - Dados atualizados; estoque atual não alterado pela edição
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -878,7 +878,7 @@
   1. `?page=produtos&action=delete&id={ID}`
 - **Resultado Esperado:**
   - Produto removido ou inativado
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -907,7 +907,7 @@
   - `estoque_atual` do produto reduzido em 2
   - Movimentação de saída registrada em `estoque_movimentacoes`
   - Lançamento de receita `pago` criado em `financeiro`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -920,7 +920,7 @@
   - `valor_total = 140.00`
   - Estoque de ambos os produtos decrementado corretamente
   - Lançamento financeiro com `valor = 140.00`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -932,7 +932,7 @@
 - **Resultado Esperado:**
   - Venda criada; sem alteração de estoque de produtos
   - Lançamento financeiro registrado
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -945,7 +945,7 @@
   - `valor_total = 130.00`
   - Estoque decrementado apenas para o produto
   - Financeiro: lançamento único de R$ 130,00
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -958,7 +958,7 @@
 - **Resultado Esperado:**
   - `valor_total = 100.00`, `desconto = 20.00`, `valor_final = 80.00`
   - Lançamento financeiro com `valor = 80.00` (valor final, não bruto)
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -971,7 +971,7 @@
 - **Resultado Esperado:**
   - Erro `"Adicione pelo menos um item à venda."`
   - Nenhuma venda inserida no banco
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -982,7 +982,7 @@
   2. Adicionar produto e salvar
 - **Resultado Esperado:**
   - Venda criada com `tutor_id = NULL` e `pet_id = NULL`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -993,7 +993,7 @@
   2. Salvar
 - **Resultado Esperado:**
   - `venda_itens.profissional_id` preenchido corretamente
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -1005,7 +1005,7 @@
   - Cabeçalho da venda: cliente, data, forma de pagamento, valores
   - Listagem de itens: nome, quantidade, preço unitário, preço total
   - Total da venda calculado corretamente
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -1018,7 +1018,7 @@
   - Estoque do produto incrementado de volta (8 → 10)
   - Movimentação de entrada por `Cancelamento de venda` registrada
   - Lançamento financeiro com `status = 'cancelado'`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -1029,7 +1029,7 @@
 - **Resultado Esperado:**
   - Apenas vendas de março/2026 exibidas
   - Totalizadores refletem o período filtrado
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -1039,7 +1039,7 @@
   1. Filtrar por `status=cancelada`
 - **Resultado Esperado:**
   - Apenas vendas canceladas listadas
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -1051,7 +1051,7 @@
   - `total_vendas = 3`
   - `faturamento_total = R$ 350,00`
   - `ticket_medio = R$ 116,67`
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 
@@ -1064,7 +1064,7 @@
 - **Resultado Esperado:**
   - Cada forma de pagamento salva corretamente
   - Lançamento financeiro reflete a forma de pagamento
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 

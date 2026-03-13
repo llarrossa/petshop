@@ -264,10 +264,16 @@ class Venda {
             $params[':data_fim'] = $filtros['data_fim'];
         }
 
-        // Filtro por tutor
+        // Filtro por tutor (ID)
         if (isset($filtros['tutor_id'])) {
             $sql .= " AND v.tutor_id = :tutor_id";
             $params[':tutor_id'] = $filtros['tutor_id'];
+        }
+
+        // Filtro por nome do cliente
+        if (!empty($filtros['cliente'])) {
+            $sql .= " AND t.nome LIKE :cliente";
+            $params[':cliente'] = '%' . $filtros['cliente'] . '%';
         }
 
         $sql .= " ORDER BY v.data DESC";
@@ -286,6 +292,35 @@ class Venda {
         }
 
         return $this->db->query($sql, $params);
+    }
+
+    /**
+     * Contar total de vendas (respeita os mesmos filtros do getAll)
+     */
+    public function count($filtros = []) {
+        $sql = "SELECT COUNT(*) as total FROM vendas v
+                LEFT JOIN tutors t ON v.tutor_id = t.id
+                WHERE v.company_id = :company_id";
+        $params = [':company_id' => $this->company_id];
+
+        if (isset($filtros['status'])) {
+            $sql .= " AND v.status = :status";
+            $params[':status'] = $filtros['status'];
+        }
+
+        if (isset($filtros['data_inicio']) && isset($filtros['data_fim'])) {
+            $sql .= " AND DATE(v.data) BETWEEN :data_inicio AND :data_fim";
+            $params[':data_inicio'] = $filtros['data_inicio'];
+            $params[':data_fim']    = $filtros['data_fim'];
+        }
+
+        if (!empty($filtros['cliente'])) {
+            $sql .= " AND t.nome LIKE :cliente";
+            $params[':cliente'] = '%' . $filtros['cliente'] . '%';
+        }
+
+        $result = $this->db->queryOne($sql, $params);
+        return $result['total'] ?? 0;
     }
 
     /**

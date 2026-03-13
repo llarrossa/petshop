@@ -1,17 +1,18 @@
 <?php
-$page_title = isset($dados) ? 'Editar Produto' : 'Novo Produto';
-$isEdit = isset($dados);
+$isEdit = !empty($dados['id']);
+$page_title = $isEdit ? 'Editar Produto' : 'Novo Produto';
 ob_start();
 ?>
 
 <div class="page-header">
     <h2><?= $isEdit ? 'Editar' : 'Novo' ?> Produto</h2>
-    <a href="?page=produtos&action=list" class="btn btn-secondary">← Voltar</a>
+    <a href="<?= htmlspecialchars($_GET['return_url'] ?? '?page=produtos&action=list') ?>" class="btn btn-secondary">← Voltar</a>
 </div>
 
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form">
+            <input type="hidden" name="return_url" value="<?= htmlspecialchars($_GET['return_url'] ?? '?page=produtos&action=list') ?>">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="nome">Nome *</label>
@@ -84,7 +85,7 @@ ob_start();
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">💾 Salvar</button>
-                <a href="?page=produtos&action=list" class="btn btn-secondary">Cancelar</a>
+                <a href="<?= htmlspecialchars($_GET['return_url'] ?? '?page=produtos&action=list') ?>" class="btn btn-secondary">Cancelar</a>
             </div>
         </form>
     </div>

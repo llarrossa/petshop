@@ -176,8 +176,7 @@ function calcularTotal() {
     document.getElementById('exib-total').textContent = 'R$ ' + total.toFixed(2).replace('.', ',');
 }
 
-// Adiciona um item inicial
-adicionarItem();
+// Carrinho inicia vazio — o usuário adiciona itens manualmente
 </script>
 
 <?php

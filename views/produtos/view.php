@@ -6,9 +6,10 @@ ob_start();
 <div class="page-header">
     <h2>Produto: <?= htmlspecialchars($dados['nome']) ?></h2>
     <div>
-        <a href="?page=produtos&action=edit&id=<?= $dados['id'] ?>" class="btn btn-warning">✏️ Editar</a>
-        <a href="?page=produtos&action=movimentacao&id=<?= $dados['id'] ?>" class="btn btn-secondary">📦 Movimentação</a>
-        <a href="?page=produtos&action=list" class="btn btn-secondary">← Voltar</a>
+        <?php $ru = htmlspecialchars($_GET['return_url'] ?? '?page=produtos&action=list'); ?>
+        <a href="?page=produtos&action=edit&id=<?= $dados['id'] ?>&return_url=<?= urlencode($_GET['return_url'] ?? '?page=produtos&action=list') ?>" class="btn btn-warning">✏️ Editar</a>
+        <a href="?page=produtos&action=movimentacao&id=<?= $dados['id'] ?>&return_url=<?= urlencode($_GET['return_url'] ?? '?page=produtos&action=list') ?>" class="btn btn-secondary">📦 Movimentação</a>
+        <a href="<?= $ru ?>" class="btn btn-secondary">← Voltar</a>
     </div>
 </div>
 
