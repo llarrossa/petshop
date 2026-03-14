@@ -221,17 +221,17 @@ class Pet {
      * Buscar prontuário do pet
      */
     public function getProntuario($pet_id, $limit = 10) {
-        $sql = "SELECT pr.*, u.nome as veterinario_nome
-                FROM prontuario pr
-                LEFT JOIN users u ON pr.veterinario_id = u.id
+        $sql = "SELECT pr.*, prof.nome AS profissional_nome
+                FROM prontuarios pr
+                LEFT JOIN profissionais prof ON pr.profissional_id = prof.id
                 WHERE pr.pet_id = :pet_id AND pr.company_id = :company_id
-                ORDER BY pr.data_atendimento DESC
+                ORDER BY pr.data_atendimento DESC, pr.id DESC
                 LIMIT :limit";
 
         $stmt = $this->db->getConnection()->prepare($sql);
-        $stmt->bindValue(':pet_id', $pet_id, PDO::PARAM_INT);
+        $stmt->bindValue(':pet_id',     $pet_id,           PDO::PARAM_INT);
         $stmt->bindValue(':company_id', $this->company_id, PDO::PARAM_INT);
-        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':limit',      $limit,            PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchAll();
     }

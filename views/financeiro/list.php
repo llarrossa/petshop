@@ -42,8 +42,8 @@ ob_start();
     </div>
     <div class="card card-danger" style="background:#dc3545; color:#fff;">
         <div class="card-icon">📉</div>
-        <div class="card-content">
-            <h3>Despesas</h3>
+        <div class="card-content" style="color:#fff;">
+            <h3 style="color:#fff;">Despesas</h3>
             <p class="value"><?= formatarMoeda($totais['total_despesas'] ?? 0) ?></p>
         </div>
     </div>

@@ -58,6 +58,10 @@
                     <li><a href="?page=profissionais"><span>👨‍⚕️</span> Profissionais</a></li>
                     <?php endif; ?>
 
+                    <?php if (moduloDisponivel('prontuario')): ?>
+                    <li><a href="?page=prontuario"><span>📋</span> Prontuário</a></li>
+                    <?php endif; ?>
+
                     <?php if (moduloDisponivel('relatorios')): ?>
                     <li><a href="?page=relatorios"><span>📈</span> Relatórios</a></li>
                     <?php endif; ?>

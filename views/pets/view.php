@@ -164,40 +164,73 @@ ob_start();
 <!-- Prontuário -->
 <div class="card">
     <div class="card-header">
-        <h3>📋 Prontuário / Histórico</h3>
+        <h3>📋 Histórico de Prontuário</h3>
+        <?php if (moduloDisponivel('prontuario')): ?>
+        <a href="?page=prontuario&action=create&pet_id=<?= $dados['id'] ?>" class="btn btn-primary btn-sm">
+            + Novo Registro
+        </a>
+        <?php endif; ?>
     </div>
     <div class="card-body">
         <?php if (empty($prontuario)): ?>
-            <p class="text-center text-muted">Nenhum registro no prontuário ainda.</p>
+            <p class="text-center text-muted">Nenhum registro de prontuário ainda.</p>
+            <?php if (moduloDisponivel('prontuario')): ?>
+            <p class="text-center">
+                <a href="?page=prontuario&action=create&pet_id=<?= $dados['id'] ?>" class="btn btn-primary btn-sm">
+                    Adicionar primeiro registro
+                </a>
+            </p>
+            <?php endif; ?>
         <?php else: ?>
             <div class="table-responsive">
                 <table class="table">
                     <thead>
                         <tr>
                             <th>Data</th>
-                            <th>Tipo</th>
-                            <th>Título</th>
-                            <th>Descrição</th>
                             <th>Profissional</th>
+                            <th>Peso</th>
+                            <th>Observações</th>
+                            <th>Recomendações</th>
+                            <?php if (moduloDisponivel('prontuario')): ?>
+                            <th>Ações</th>
+                            <?php endif; ?>
                         </tr>
                     </thead>
                     <tbody>
                         <?php foreach ($prontuario as $reg): ?>
                             <tr>
-                                <td><?= date('d/m/Y', strtotime($reg['data_atendimento'])) ?></td>
-                                <td>
-                                    <span class="badge badge-info">
-                                        <?= htmlspecialchars(ucfirst($reg['tipo'])) ?>
-                                    </span>
+                                <td style="white-space:nowrap;">
+                                    <?= date('d/m/Y', strtotime($reg['data_atendimento'])) ?>
                                 </td>
-                                <td><?= htmlspecialchars($reg['titulo'] ?? '-') ?></td>
-                                <td><?= nl2br(htmlspecialchars($reg['descricao'])) ?></td>
-                                <td><?= htmlspecialchars($reg['veterinario_nome'] ?? '-') ?></td>
+                                <td><?= htmlspecialchars($reg['profissional_nome'] ?? '-') ?></td>
+                                <td><?= $reg['peso'] ? number_format($reg['peso'], 2, ',', '.') . ' kg' : '-' ?></td>
+                                <td style="max-width:280px;">
+                                    <?= nl2br(htmlspecialchars($reg['observacoes'] ?? '-')) ?>
+                                </td>
+                                <td style="max-width:200px;">
+                                    <?= nl2br(htmlspecialchars($reg['recomendacoes'] ?? '-')) ?>
+                                </td>
+                                <?php if (moduloDisponivel('prontuario')): ?>
+                                <td class="actions">
+                                    <a href="?page=prontuario&action=edit&id=<?= $reg['id'] ?>"
+                                       class="btn btn-sm btn-warning" title="Editar">✏️</a>
+                                    <a href="?page=prontuario&action=delete&id=<?= $reg['id'] ?>"
+                                       class="btn btn-sm btn-danger" title="Excluir"
+                                       onclick="return confirm('Excluir este registro?')">🗑️</a>
+                                </td>
+                                <?php endif; ?>
                             </tr>
                         <?php endforeach; ?>
                     </tbody>
                 </table>
             </div>
+            <?php if (moduloDisponivel('prontuario')): ?>
+            <div style="margin-top:12px;">
+                <a href="?page=prontuario&action=list&pet_id=<?= $dados['id'] ?>" class="btn btn-secondary btn-sm">
+                    Ver histórico completo
+                </a>
+            </div>
+            <?php endif; ?>
         <?php endif; ?>
     </div>
 </div>
