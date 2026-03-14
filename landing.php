@@ -303,7 +303,7 @@
         .cta-trust { margin-top: 24px; font-size: 0.82rem; opacity: .6; }
 
         /* ── FOOTER ── */
-        footer { background: #0F172A; color: #94A3B8; padding: 64px 0 32px; }
+        footer { background: #09152b; color: #94A3B8; padding: 64px 0 32px; }
         .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 48px; margin-bottom: 56px; }
         .footer-brand p { font-size: 0.875rem; line-height: 1.7; margin: 12px 0 24px; max-width: 260px; }
         .footer-social { display: flex; gap: 10px; }
@@ -678,7 +678,7 @@
         <div class="footer-grid">
             <div class="footer-brand">
                 <a href="#">
-                    <img src="public/img/primary-logo.png" alt="Pawfy" style="height:32px;display:block;filter:brightness(0) invert(1);">
+                    <img src="public/img/dark-horizontal.png" alt="Pawfy" style="height: 130px;display:block;width: 242px;">
                 </a>
                 <p>Sistema de gestão completo para pet shops. Agenda, vendas, estoque e financeiro em um único lugar.</p>
                 <div class="footer-social">

@@ -28,7 +28,7 @@ if (isset($_SESSION['user_id'])) {
         }
 
         .card {
-            background: #fff;
+            background: #e7f0f6;
             border-radius: 16px;
             box-shadow: 0 24px 64px rgba(0,0,0,.25);
             width: 100%;
@@ -159,7 +159,7 @@ if (isset($_SESSION['user_id'])) {
     <div class="card">
         <div class="logo">
             <a href="<?= APP_URL ?>">
-                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height:48px;max-width:180px;">
+                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height: 88px;max-width:180px;">
             </a>
             <p>Acesse o painel do seu pet shop</p>
         </div>

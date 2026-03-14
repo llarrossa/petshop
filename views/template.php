@@ -17,7 +17,7 @@
             <button class="sidebar-close" aria-label="Fechar menu">✕</button>
             <div class="logo">
                 <a href="?page=dashboard">
-                    <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height:36px;max-width:100%;display:block;">
+                    <img src="<?= APP_URL ?>/public/img/dark-horizontal.png" alt="Pawfy" style="max-height: 78px;max-width:100%;display:block;place-self: center;">
                 </a>
                 <p><?= $_SESSION['company_name'] ?? 'Sistema' ?></p>
             </div>

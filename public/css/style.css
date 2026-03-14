@@ -44,7 +44,7 @@ body {
 
 .sidebar {
     width: var(--sidebar-width);
-    background-color: var(--dark-color);
+    background-color: #07142a;
     color: white;
     padding: 20px;
     display: flex;
