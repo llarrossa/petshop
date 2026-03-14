@@ -133,7 +133,7 @@
             text-align: center; padding: 11px;
             border: 1.5px solid var(--blue); border-radius: 8px;
         }
-        .nav-mobile-cta .btn { text-align: center; }
+        .nav-mobile-cta .btn { text-align: center; width: 100%; justify-content: center; }
 
         /* ── HERO ── */
         .hero {

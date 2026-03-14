@@ -3,6 +3,16 @@
  * Pet Shop SaaS
  */
 
+// Ocultar parâmetros de filtro da URL em páginas de listagem
+(function() {
+    var params = new URLSearchParams(window.location.search);
+    var page   = params.get('page');
+    var action = params.get('action');
+    if (page && action === 'list' && params.toString() !== 'page=' + page + '&action=list') {
+        history.replaceState(null, '', window.location.pathname + '?page=' + page + '&action=list');
+    }
+})();
+
 $(document).ready(function() {
 
     /* ------------------------------------------------

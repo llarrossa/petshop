@@ -57,8 +57,8 @@ ob_start();
                     </select>
                 </div>
                 <div class="col-md-2" style="display:flex;gap:6px;">
-                    <button type="submit" class="btn btn-primary btn-block">Filtrar</button>
-                    <a href="?page=pets&action=list" class="btn btn-secondary" title="Limpar filtros">✕</a>
+                    <button type="submit" class="btn btn-secondary btn-block">Filtrar</button>
+                    <a href="?page=pets&action=list" class="btn btn-link">Limpar</a>
                 </div>
             </div>
         </form>
