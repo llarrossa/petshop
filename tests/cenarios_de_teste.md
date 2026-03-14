@@ -1079,7 +1079,7 @@
 - **Resultado Esperado:**
   - Lançamento inserido corretamente
   - Aparece na listagem do período
-- **Status:** `[ ]`
+- **Status:** `[x]`
 
 ---
 

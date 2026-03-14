@@ -61,7 +61,7 @@
         /* ── NAV ── */
         nav {
             position: sticky; top: 0; z-index: 100;
-            background: rgb(231 240 247);
+            background: rgb(231, 240, 247);
             backdrop-filter: blur(10px);
             border-bottom: 1px solid var(--border);
         }
@@ -82,6 +82,58 @@
         .nav-cta { display: flex; align-items: center; gap: 12px; }
         .nav-login { color: var(--blue); font-size: 0.9rem; font-weight: 600; }
         .nav-login:hover { text-decoration: underline; }
+
+        /* Hambúrguer */
+        .nav-hamburger {
+            display: none; flex-direction: column; justify-content: center; gap: 5px;
+            width: 40px; height: 40px; background: none; border: none;
+            cursor: pointer; padding: 6px; border-radius: 8px;
+            transition: background .15s;
+        }
+        .nav-hamburger:hover { background: rgba(37, 99, 235, 0.08); }
+        .nav-hamburger span {
+            display: block; height: 2px; width: 100%;
+            background: var(--text); border-radius: 2px;
+            transition: transform .25s, opacity .25s;
+            transform-origin: center;
+        }
+        .nav-hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .nav-hamburger.open span:nth-child(2) { opacity: 0; }
+        .nav-hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Menu mobile */
+        .nav-mobile {
+            display: none; position: absolute; top: 68px; left: 0; right: 0;
+            background: rgba(231, 240, 247, 0.96);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.45);
+            box-shadow: 0 8px 32px rgba(15, 23, 42, 0.10);
+            padding: 16px 0 24px;
+            flex-direction: column;
+        }
+        .nav-mobile.open { display: flex; }
+        .nav-mobile ul {
+            list-style: none; display: flex; flex-direction: column;
+            padding: 0 24px; margin-bottom: 16px;
+        }
+        .nav-mobile ul li a {
+            display: block; padding: 12px 0;
+            color: var(--muted); font-size: 0.95rem; font-weight: 500;
+            border-bottom: 1px solid rgba(0,0,0,.06);
+            transition: color .15s;
+        }
+        .nav-mobile ul li:last-child a { border-bottom: none; }
+        .nav-mobile ul li a:hover { color: var(--blue); }
+        .nav-mobile-cta {
+            display: flex; flex-direction: column; gap: 10px;
+            padding: 0 24px;
+        }
+        .nav-mobile-cta .nav-login {
+            text-align: center; padding: 11px;
+            border: 1.5px solid var(--blue); border-radius: 8px;
+        }
+        .nav-mobile-cta .btn { text-align: center; }
 
         /* ── HERO ── */
         .hero {
@@ -337,6 +389,8 @@
         }
         @media (max-width: 768px) {
             .nav-links { display: none; }
+            .nav-cta { display: none; }
+            .nav-hamburger { display: flex; }
             .problems-inner { grid-template-columns: 1fr; }
             .demo-grid { grid-template-columns: 1fr; }
             section { padding: 64px 0; }
@@ -362,6 +416,21 @@
             <li><a href="#depoimentos">Depoimentos</a></li>
         </ul>
         <div class="nav-cta">
+            <a href="public/login.php" class="nav-login">Entrar</a>
+            <a href="public/register.php" class="btn btn-orange">Começar grátis</a>
+        </div>
+        <button class="nav-hamburger" aria-label="Abrir menu" aria-expanded="false">
+            <span></span><span></span><span></span>
+        </button>
+    </div>
+    <div class="nav-mobile" id="navMobile">
+        <ul>
+            <li><a href="#problemas">Por que o Pawfy?</a></li>
+            <li><a href="#beneficios">Funcionalidades</a></li>
+            <li><a href="#planos">Planos</a></li>
+            <li><a href="#depoimentos">Depoimentos</a></li>
+        </ul>
+        <div class="nav-mobile-cta">
             <a href="public/login.php" class="nav-login">Entrar</a>
             <a href="public/register.php" class="btn btn-orange">Começar grátis</a>
         </div>
@@ -725,6 +794,26 @@
         </div>
     </div>
 </footer>
+
+<script>
+    const hamburger = document.querySelector('.nav-hamburger');
+    const mobileMenu = document.getElementById('navMobile');
+
+    hamburger.addEventListener('click', () => {
+        const isOpen = mobileMenu.classList.toggle('open');
+        hamburger.classList.toggle('open', isOpen);
+        hamburger.setAttribute('aria-expanded', isOpen);
+    });
+
+    // Fecha o menu ao clicar em um link
+    mobileMenu.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+            mobileMenu.classList.remove('open');
+            hamburger.classList.remove('open');
+            hamburger.setAttribute('aria-expanded', 'false');
+        });
+    });
+</script>
 
 </body>
 </html>
