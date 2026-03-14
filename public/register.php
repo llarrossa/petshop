@@ -159,7 +159,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         .card {
-            background: #fff;
+            background: #e7f0f6;
             border-radius: 16px;
             box-shadow: 0 24px 64px rgba(0,0,0,.25);
             width: 100%;
@@ -331,7 +331,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         <div class="logo">
             <a href="<?= APP_URL ?>">
-                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height:48px;max-width:180px;">
+                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height: 88px;max-width:180px;">
             </a>
             <p>7 dias grátis, sem cartão de crédito</p>
         </div>

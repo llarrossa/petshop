@@ -93,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             padding: 32px 16px;
         }
         .card {
-            background: #fff;
+            background: #e6f0f6;
             border-radius: 16px;
             box-shadow: 0 24px 64px rgba(0,0,0,.25);
             width: 100%;
@@ -132,7 +132,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     <div class="card">
         <div class="logo">
             <a href="<?= APP_URL ?>">
-                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height:48px;max-width:180px;">
+                <img src="<?= APP_URL ?>/public/img/primary-logo.png" alt="Pawfy" style="max-height: 78px;max-width:180px;">
             </a>
             <p>Recuperação de senha</p>
         </div>
