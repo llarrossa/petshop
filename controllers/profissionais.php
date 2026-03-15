@@ -45,6 +45,7 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $profissional->nome          = sanitize($_POST['nome']);
             $profissional->funcao        = sanitize($_POST['funcao'] ?? '');
             $profissional->telefone      = sanitize($_POST['telefone'] ?? '');
@@ -75,6 +76,7 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $profissional->id            = $id;
             $profissional->nome          = sanitize($_POST['nome']);
             $profissional->funcao        = sanitize($_POST['funcao'] ?? '');

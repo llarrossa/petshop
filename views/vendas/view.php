@@ -7,8 +7,8 @@ ob_start();
     <h2>Venda #<?= $dados['id'] ?></h2>
     <div>
         <?php
-        $return_url = htmlspecialchars($_GET['return_url'] ?? '?page=vendas&action=list');
-        $return_url_enc = urlencode($_GET['return_url'] ?? '?page=vendas&action=list');
+        $return_url = htmlspecialchars(safeReturnUrl($_GET['return_url'] ?? '', '?page=vendas&action=list'));
+        $return_url_enc = urlencode(safeReturnUrl($_GET['return_url'] ?? '', '?page=vendas&action=list'));
         ?>
         <?php if ($dados['status'] == 'finalizada' && moduloDisponivel('nota_fiscal')): ?>
             <?php if (empty($dados['tem_nota_fiscal'])): ?>

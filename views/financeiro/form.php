@@ -11,6 +11,7 @@ ob_start();
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <div class="form-row">
                 <div class="form-group col-md-3">
                     <label for="tipo">Tipo *</label>

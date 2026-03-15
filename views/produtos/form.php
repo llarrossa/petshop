@@ -12,6 +12,7 @@ ob_start();
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <input type="hidden" name="return_url" value="<?= htmlspecialchars($_GET['return_url'] ?? '?page=produtos&action=list') ?>">
             <div class="form-row">
                 <div class="form-group col-md-6">

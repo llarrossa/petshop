@@ -59,6 +59,7 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $sql = "INSERT INTO financeiro (company_id, tipo, categoria, descricao, valor, forma_pagamento, data_pagamento, status)
                     VALUES (:company_id, :tipo, :categoria, :descricao, :valor, :forma_pagamento, :data_pagamento, :status)";
             $params = [

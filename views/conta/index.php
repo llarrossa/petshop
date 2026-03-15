@@ -36,6 +36,7 @@
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <input type="hidden" name="acao" value="perfil">
 
             <div class="form-row">
@@ -78,6 +79,7 @@
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <input type="hidden" name="acao" value="senha">
 
             <div class="form-row">
@@ -118,6 +120,7 @@
             O token da API é obtido diretamente no painel do provedor NFS-e (ex: Focus NFe).
         </p>
         <form method="POST" class="form">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <input type="hidden" name="acao" value="fiscal">
 
             <h4 style="margin-bottom:12px;font-size:15px;color:#374151;">Dados do Prestador</h4>
@@ -232,10 +235,10 @@
             </div>
             <div class="form-group">
                 <label for="nfse_api_token">Token da API *</label>
-                <input type="text" id="nfse_api_token" name="nfse_api_token" class="form-control"
+                <input type="password" id="nfse_api_token" name="nfse_api_token" class="form-control"
                        placeholder="Token gerado no painel do provedor NFS-e"
                        value="<?= htmlspecialchars($config_fiscal['nfse_api_token'] ?? '') ?>"
-                       autocomplete="off">
+                       autocomplete="new-password">
                 <small class="text-muted">
                     Obtenha o token no painel da
                     <a href="https://focusnfe.com.br" target="_blank" rel="noopener">Focus NFe</a>.

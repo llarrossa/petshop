@@ -58,9 +58,11 @@ if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-// Configurações de Erro (Desabilitar em produção)
+// Configurações de Erro (display_errors desabilitado fora de ambiente local)
 error_reporting(E_ALL);
-ini_set('display_errors', 1);
+$_localIps = ['127.0.0.1', '::1', ''];
+ini_set('display_errors', in_array($_SERVER['REMOTE_ADDR'] ?? '', $_localIps) ? 1 : 0);
+unset($_localIps);
 
 // Configurações de Upload
 define('UPLOAD_MAX_SIZE', 5 * 1024 * 1024); // 5MB
@@ -164,4 +166,33 @@ function thSort($label, $col, $cur_col, $cur_dir) {
     $icon = $cur_col === $col ? ($cur_dir === 'asc' ? ' ▲' : ' ▼') : '';
     return '<a href="?' . htmlspecialchars(http_build_query($params)) . '" class="sort-link">'
         . htmlspecialchars($label) . $icon . '</a>';
+}
+
+// Gera e retorna o CSRF token da sessão atual
+function getCsrfToken() {
+    if (empty($_SESSION['csrf_token'])) {
+        $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+    }
+    return $_SESSION['csrf_token'];
+}
+
+// Valida o CSRF token enviado no POST; aborta com 403 se inválido
+function validateCsrfToken() {
+    $token = $_POST['csrf_token'] ?? '';
+    if (empty($_SESSION['csrf_token']) || !hash_equals($_SESSION['csrf_token'], $token)) {
+        http_response_code(403);
+        $_SESSION['error'] = 'Token de segurança inválido. Recarregue a página e tente novamente.';
+        $ref = $_SERVER['HTTP_REFERER'] ?? '?page=dashboard';
+        header('Location: ' . safeReturnUrl($ref, '?page=dashboard'));
+        exit;
+    }
+}
+
+// Valida que uma URL de retorno é relativa (começa com ?)
+function safeReturnUrl($url, $default = '?page=dashboard') {
+    $url = trim($url ?? '');
+    if ($url === '' || $url[0] !== '?') {
+        return $default;
+    }
+    return $url;
 }

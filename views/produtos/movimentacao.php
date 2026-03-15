@@ -25,6 +25,7 @@ ob_start();
     </div>
     <div class="card-body">
         <form method="POST" id="form-movimentacao" class="form">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <input type="hidden" name="return_url"        value="<?= htmlspecialchars($return_url) ?>">
             <input type="hidden" name="confirmar_negativo" id="confirmar_negativo" value="">
 
@@ -60,7 +61,7 @@ ob_start();
 <script>
 (function () {
     var estoqueAtual = <?= (int)$dados['estoque_atual'] ?>;
-    var unidade      = <?= json_encode($dados['unidade']) ?>;
+    var unidade      = <?= json_encode($dados['unidade'], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
     var form         = document.getElementById('form-movimentacao');
 
     form.addEventListener('submit', function (e) {

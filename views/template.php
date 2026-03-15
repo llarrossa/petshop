@@ -19,7 +19,7 @@
                 <a href="?page=dashboard">
                     <img src="<?= APP_URL ?>/public/img/dark-horizontal.png" alt="Pawfy" style="max-height: 78px;max-width:100%;display:block;place-self: center;">
                 </a>
-                <p><?= $_SESSION['company_name'] ?? 'Sistema' ?></p>
+                <p><?= htmlspecialchars($_SESSION['company_name'] ?? 'Sistema') ?></p>
             </div>
 
             <nav class="menu">
@@ -73,8 +73,8 @@
             </nav>
 
             <div class="user-info">
-                <p><strong><?= $_SESSION['user_name'] ?? 'Usuário' ?></strong></p>
-                <p><?= $_SESSION['user_email'] ?? '' ?></p>
+                <p><strong><?= htmlspecialchars($_SESSION['user_name'] ?? 'Usuário') ?></strong></p>
+                <p><?= htmlspecialchars($_SESSION['user_email'] ?? '') ?></p>
                 <?php if (($_SESSION['subscription_status'] ?? '') === 'trialing'): ?>
                 <a href="<?= APP_URL ?>/public/planos.php" class="btn-assinar">Assinar um plano</a>
                 <?php endif; ?>
@@ -170,14 +170,14 @@
                 <!-- Mensagens de feedback -->
                 <?php if (isset($_SESSION['success'])): ?>
                 <div class="alert alert-success">
-                    <?= $_SESSION['success'] ?>
+                    <?= htmlspecialchars($_SESSION['success']) ?>
                     <?php unset($_SESSION['success']); ?>
                 </div>
                 <?php endif; ?>
 
                 <?php if (isset($_SESSION['error'])): ?>
                 <div class="alert alert-error">
-                    <?= $_SESSION['error'] ?>
+                    <?= htmlspecialchars($_SESSION['error']) ?>
                     <?php unset($_SESSION['error']); ?>
                 </div>
                 <?php endif; ?>

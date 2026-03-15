@@ -89,6 +89,7 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $erros = [];
 
             if (empty($config_fiscal)) {

@@ -8,6 +8,8 @@ require_once __DIR__ . '/../classes/Prontuario.class.php';
 require_once __DIR__ . '/../classes/Pet.class.php';
 require_once __DIR__ . '/../classes/Tutor.class.php';
 
+verificarLogin();
+
 $action        = $_GET['action'] ?? 'list';
 $prontuarioObj = new Prontuario();
 $petObj        = new Pet();
@@ -72,6 +74,7 @@ switch ($action) {
     // --------------------------------------------------------
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $prontuarioObj->pet_id          = (int)$_POST['pet_id'];
             $prontuarioObj->cliente_id      = (int)$_POST['cliente_id'];
             $prontuarioObj->profissional_id = !empty($_POST['profissional_id']) ? (int)$_POST['profissional_id'] : null;
@@ -116,6 +119,7 @@ switch ($action) {
         $id = (int)$_GET['id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $prontuarioObj->id              = $id;
             $prontuarioObj->pet_id          = (int)$_POST['pet_id'];
             $prontuarioObj->cliente_id      = (int)$_POST['cliente_id'];

@@ -52,6 +52,7 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $servico->nome          = trim(strip_tags($_POST['nome']));
             $servico->descricao     = trim(strip_tags($_POST['descricao'] ?? ''));
             $servico->preco         = (float)$_POST['preco'];
@@ -83,6 +84,7 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $servico->id            = $id;
             $servico->nome          = trim(strip_tags($_POST['nome']));
             $servico->descricao     = trim(strip_tags($_POST['descricao'] ?? ''));

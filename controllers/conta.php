@@ -29,6 +29,7 @@ if (!$usuario) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    validateCsrfToken();
     $acao = $_POST['acao'] ?? '';
 
     // --- Atualizar perfil (nome + e-mail) ---

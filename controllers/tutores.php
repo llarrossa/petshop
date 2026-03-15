@@ -42,6 +42,7 @@ switch ($action) {
     case 'create':
         $back_url = '?' . ($_SESSION['clientes_qs'] ?? 'page=clientes&action=list');
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $tutor->nome = sanitize($_POST['nome']);
             $tutor->cpf = sanitize($_POST['cpf'] ?? '');
             $tutor->telefone = sanitize($_POST['telefone'] ?? '');
@@ -77,6 +78,7 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $tutor->id = $id;
             $tutor->nome = sanitize($_POST['nome']);
             $tutor->cpf = sanitize($_POST['cpf'] ?? '');

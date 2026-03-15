@@ -9,6 +9,7 @@ ob_start();
 </div>
 
 <form method="POST" class="form" id="form-venda">
+    <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
     <div class="form-row">
         <div class="form-group col-md-5">
             <label for="tutor_id">Cliente</label>
@@ -79,15 +80,15 @@ ob_start();
 <script>
 var servicos = <?= json_encode(array_map(function($s) {
     return ['id' => $s['id'], 'nome' => $s['nome'], 'preco' => $s['preco']];
-}, $servicos)) ?>;
+}, $servicos), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
 var produtos = <?= json_encode(array_map(function($p) {
     return ['id' => $p['id'], 'nome' => $p['nome'], 'preco' => $p['preco_venda']];
-}, $produtos)) ?>;
+}, $produtos), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
 var profissionais = <?= json_encode(array_map(function($p) {
     return ['id' => $p['id'], 'nome' => $p['nome']];
-}, $profissionais)) ?>;
+}, $profissionais), JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
 var itemCount = 0;
 

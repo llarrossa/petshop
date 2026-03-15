@@ -13,6 +13,7 @@ ob_start();
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form" id="form-agenda">
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <div class="form-row">
                 <div class="form-group col-md-6">
                     <label for="tutor_id">Cliente *</label>
@@ -107,7 +108,7 @@ function carregarPets(tutorId) {
         select.innerHTML = '<option value="">Selecione o cliente primeiro...</option>';
         return;
     }
-    fetch('?page=pets&action=buscar&termo=&tutor_id=' + tutorId)
+    fetch('?page=pets&action=buscar&termo=&tutor_id=' + encodeURIComponent(tutorId))
         .then(r => r.json())
         .then(pets => {
             select.innerHTML = '<option value="">Selecione o pet...</option>';

@@ -7,6 +7,8 @@ require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../classes/Pet.class.php';
 require_once __DIR__ . '/../classes/Tutor.class.php';
 
+verificarLogin();
+
 $action = $_GET['action'] ?? 'list';
 $pet = new Pet();
 $tutorObj = new Tutor();
@@ -97,6 +99,7 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $pet->tutor_id       = sanitize($_POST['tutor_id']);
             $pet->nome           = sanitize($_POST['nome']);
             $pet->especie        = sanitize($_POST['especie']);
@@ -127,6 +130,7 @@ switch ($action) {
         $id = (int)$_GET['id'];
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $pet->id             = $id;
             $pet->tutor_id       = sanitize($_POST['tutor_id']);
             $pet->nome           = sanitize($_POST['nome']);

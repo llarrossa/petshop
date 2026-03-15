@@ -61,6 +61,7 @@ switch ($action) {
         $profissionais = (new Profissional())->getAll(['status' => 'ativo']);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $agenda->pet_id         = (int)$_POST['pet_id'];
             $agenda->tutor_id       = (int)$_POST['tutor_id'];
             $agenda->servico_id     = (int)$_POST['servico_id'];
@@ -111,6 +112,7 @@ switch ($action) {
         $pets_tutor    = (new Pet())->getAll(['tutor_id' => $dados['tutor_id']]);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $agenda->id             = $id;
             $agenda->pet_id         = (int)$_POST['pet_id'];
             $agenda->tutor_id       = (int)$_POST['tutor_id'];

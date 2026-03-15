@@ -47,6 +47,7 @@ $cep_pre      = $tutor['cep']      ?? '';
 <?php endif; ?>
 
 <form method="POST" class="needs-validation" novalidate>
+    <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
     <?php if ($venda_id): ?>
     <input type="hidden" name="venda_id" value="<?= $venda_id ?>">
     <?php endif; ?>

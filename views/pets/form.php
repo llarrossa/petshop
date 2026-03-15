@@ -11,6 +11,7 @@ ob_start();
 <div class="card">
     <div class="card-body">
         <form method="POST" class="needs-validation" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
             <div class="row">
                 <!-- Cliente -->
                 <div class="col-md-6">

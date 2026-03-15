@@ -21,6 +21,7 @@ foreach ($pets as $p) {
 <div class="card">
     <div class="card-body">
         <form method="POST" class="needs-validation" novalidate>
+            <input type="hidden" name="csrf_token" value="<?= getCsrfToken() ?>">
 
             <?php
             // Se veio da página do pet, preservar redirect
@@ -146,7 +147,7 @@ foreach ($pets as $p) {
 
 <script>
 // Mapa de pets para preenchimento automático do cliente
-var petsMap = <?= json_encode($pets_map) ?>;
+var petsMap = <?= json_encode($pets_map, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) ?>;
 
 document.getElementById('pet_id').addEventListener('change', function () {
     var selectedOption = this.options[this.selectedIndex];

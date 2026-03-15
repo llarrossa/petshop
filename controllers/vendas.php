@@ -53,6 +53,7 @@ switch ($action) {
         $profissionais = (new Profissional())->getAll(['status' => 'ativo']);
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $itens = [];
             $tipos = $_POST['tipo_item'] ?? [];
             $item_ids = $_POST['item_id'] ?? [];
@@ -118,7 +119,7 @@ switch ($action) {
 
     case 'cancelar':
         $id = (int)$_GET['id'];
-        $return_url = $_GET['return_url'] ?? '?page=vendas&action=list';
+        $return_url = safeReturnUrl($_GET['return_url'] ?? '', '?page=vendas&action=list');
 
         if ($venda->cancelar($id)) {
             $_SESSION['success'] = 'Venda cancelada com sucesso!';

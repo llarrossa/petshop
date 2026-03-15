@@ -46,6 +46,7 @@ switch ($action) {
 
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $sku = sanitize($_POST['sku'] ?? '');
 
             if (!empty($sku) && $produto->skuExiste($sku)) {
@@ -82,7 +83,7 @@ switch ($action) {
                         );
                     }
                     $_SESSION['success'] = 'Produto cadastrado com sucesso!';
-                    $return_url = $_POST['return_url'] ?? '?page=produtos&action=list';
+                    $return_url = safeReturnUrl($_POST['return_url'] ?? '', '?page=produtos&action=list');
                     header('Location: ' . $return_url);
                     exit;
                 } else {
@@ -106,6 +107,7 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $sku = sanitize($_POST['sku'] ?? '');
 
             if (!empty($sku) && $produto->skuExiste($sku, $id)) {
@@ -124,7 +126,7 @@ switch ($action) {
 
                 if ($produto->update()) {
                     $_SESSION['success'] = 'Produto atualizado com sucesso!';
-                    $return_url = $_POST['return_url'] ?? '?page=produtos&action=list';
+                    $return_url = safeReturnUrl($_POST['return_url'] ?? '', '?page=produtos&action=list');
                     header('Location: ' . $return_url);
                     exit;
                 } else {
@@ -154,7 +156,7 @@ switch ($action) {
 
     case 'delete':
         $id = (int)$_GET['id'];
-        $return_url = $_GET['return_url'] ?? '?page=produtos&action=list';
+        $return_url = safeReturnUrl($_GET['return_url'] ?? '', '?page=produtos&action=list');
 
         if ($produto->delete($id)) {
             $_SESSION['success'] = 'Produto excluído com sucesso!';
@@ -177,6 +179,7 @@ switch ($action) {
         }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+            validateCsrfToken();
             $tipo      = sanitize($_POST['tipo']);
             $quantidade = (int)$_POST['quantidade'];
             $motivo    = sanitize($_POST['motivo']);
@@ -186,7 +189,7 @@ switch ($action) {
                 $_SESSION['error'] = 'Operação cancelada: o estoque ficaria negativo. Confirme a operação no formulário.';
             } elseif ($produto->registrarMovimentacao($id, $tipo, $quantidade, $motivo, $_SESSION['user_id'])) {
                 $_SESSION['success'] = 'Movimentação registrada com sucesso!';
-                $return_url = $_POST['return_url'] ?? '?page=produtos&action=list';
+                $return_url = safeReturnUrl($_POST['return_url'] ?? '', '?page=produtos&action=list');
                 header('Location: ?page=produtos&action=view&id=' . $id . '&return_url=' . urlencode($return_url));
                 exit;
             } else {
