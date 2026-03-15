@@ -98,6 +98,7 @@ switch ($action) {
 
     case 'edit':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ?page=produtos&action=list'); exit; }
         $dados = $produto->getById($id);
 
         if (!$dados) {
@@ -141,6 +142,7 @@ switch ($action) {
 
     case 'view':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ?page=produtos&action=list'); exit; }
         $dados = $produto->getById($id);
 
         if (!$dados) {
@@ -156,6 +158,7 @@ switch ($action) {
 
     case 'delete':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ?page=produtos&action=list'); exit; }
         $return_url = safeReturnUrl($_GET['return_url'] ?? '', '?page=produtos&action=list');
 
         if ($produto->delete($id)) {
@@ -170,6 +173,7 @@ switch ($action) {
 
     case 'movimentacao':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ?page=produtos&action=list'); exit; }
         $dados = $produto->getById($id);
 
         if (!$dados) {
@@ -181,7 +185,7 @@ switch ($action) {
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             validateCsrfToken();
             $tipo      = sanitize($_POST['tipo']);
-            $quantidade = (int)$_POST['quantidade'];
+            $quantidade = max(1, (int)$_POST['quantidade']);
             $motivo    = sanitize($_POST['motivo']);
 
             // Bloquear saída que tornaria estoque negativo sem confirmação explícita

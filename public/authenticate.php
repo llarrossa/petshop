@@ -11,6 +11,14 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     exit;
 }
 
+// Rate limiting: máximo 5 tentativas por IP a cada 15 minutos
+$_rl_key = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0') . ':login');
+if (!checkRateLimit($_rl_key, 'login', 5, 900)) {
+    $_SESSION['error'] = 'Muitas tentativas de login. Aguarde 15 minutos e tente novamente.';
+    header('Location: login.php');
+    exit;
+}
+
 $email = sanitize($_POST['email']);
 $senha = $_POST['senha'];
 
@@ -31,6 +39,12 @@ if ($user && password_verify($senha, $user['senha'])) {
         header('Location: email_pendente.php');
         exit;
     }
+
+    // Login bem-sucedido: regenerar ID de sessão para evitar session fixation
+    session_regenerate_id(true);
+    // Limpar tentativas de login acumuladas
+    resetRateLimit($_rl_key, 'login');
+
     $subscriptionStatus = $user['subscription_status'];
     $trialEndsAt        = $user['trial_ends_at'];
 

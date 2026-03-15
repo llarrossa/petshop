@@ -39,13 +39,13 @@ if (!$registro) {
     $erro = false;
     $jaConfirmado = true;
 } else {
-    // Marcar como verificado e invalidar token
+    // Marcar como verificado e remover token (não reutilizável)
     $db->execute(
         "UPDATE users SET email_verified = 1 WHERE id = :id",
         [':id' => $registro['user_id']]
     );
     $db->execute(
-        "UPDATE email_verifications SET used = 1 WHERE token = :token",
+        "DELETE FROM email_verifications WHERE token = :token",
         [':token' => $token]
     );
     $erro         = false;
@@ -53,6 +53,9 @@ if (!$registro) {
 }
 
 if (!$erro) {
+    // Regenerar ID de sessão antes do login automático (evita session fixation)
+    session_regenerate_id(true);
+
     // Fazer login automático
     $subscriptionStatus = $registro['subscription_status'];
     $trialEndsAt        = $registro['trial_ends_at'];

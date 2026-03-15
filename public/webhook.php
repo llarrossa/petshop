@@ -76,6 +76,10 @@ switch ($event->type) {
 
         if (!$companyId || !$plano) break;
 
+        // Validar que o company_id realmente existe no banco antes de atualizar
+        $companyExists = $db->queryOne("SELECT id FROM companies WHERE id = :id LIMIT 1", [':id' => $companyId]);
+        if (!$companyExists) break;
+
         $subscriptionId = is_string($session->subscription)
             ? $session->subscription
             : ($session->subscription->id ?? null);

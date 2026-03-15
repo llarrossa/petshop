@@ -30,10 +30,10 @@ define('SMTP_PASS',       SMTP_PASS_LOCAL       ?? '');
 define('SMTP_FROM_EMAIL', SMTP_FROM_EMAIL_LOCAL ?? '');
 define('SMTP_FROM_NAME',  SMTP_FROM_NAME_LOCAL  ?? APP_NAME);
 
-// Configurações da Stripe
-define('STRIPE_SECRET_KEY',      STRIPE_SECRET_KEY_LOCAL      ?? '');
-define('STRIPE_PUBLISHABLE_KEY', STRIPE_PUBLISHABLE_KEY_LOCAL ?? '');
-define('STRIPE_WEBHOOK_SECRET',  STRIPE_WEBHOOK_SECRET_LOCAL  ?? '');
+// Configurações da Stripe — lê variável de ambiente primeiro, depois config.local.php
+define('STRIPE_SECRET_KEY',      getenv('STRIPE_SECRET_KEY')      ?: (defined('STRIPE_SECRET_KEY_LOCAL')      ? STRIPE_SECRET_KEY_LOCAL      : ''));
+define('STRIPE_PUBLISHABLE_KEY', getenv('STRIPE_PUBLISHABLE_KEY') ?: (defined('STRIPE_PUBLISHABLE_KEY_LOCAL') ? STRIPE_PUBLISHABLE_KEY_LOCAL : ''));
+define('STRIPE_WEBHOOK_SECRET',  getenv('STRIPE_WEBHOOK_SECRET')  ?: (defined('STRIPE_WEBHOOK_SECRET_LOCAL')  ? STRIPE_WEBHOOK_SECRET_LOCAL  : ''));
 
 // Price IDs dos planos na Stripe
 define('STRIPE_PRICE_BANHO_TOSA', STRIPE_PRICE_BANHO_TOSA_LOCAL ?? '');
@@ -51,7 +51,8 @@ if (!is_dir($sessionsPath)) {
 ini_set('session.save_path', $sessionsPath);
 ini_set('session.cookie_httponly', 1);
 ini_set('session.use_only_cookies', 1);
-ini_set('session.cookie_secure', 0); // Mudar para 1 em produção com HTTPS
+ini_set('session.cookie_secure', (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on') ? 1 : 0);
+ini_set('session.cookie_samesite', 'Lax');
 
 // Iniciar sessão se ainda não foi iniciada
 if (session_status() === PHP_SESSION_NONE) {
@@ -195,4 +196,52 @@ function safeReturnUrl($url, $default = '?page=dashboard') {
         return $default;
     }
     return $url;
+}
+
+// Verifica e incrementa tentativas de rate limiting (fail-open se tabela não existir)
+// Retorna true se dentro do limite, false se bloqueado
+function checkRateLimit(string $identifier, string $action = 'login', int $maxAttempts = 5, int $windowSeconds = 900): bool {
+    $db          = Database::getInstance();
+    $windowStart = date('Y-m-d H:i:s', time() - $windowSeconds);
+
+    $row = $db->queryOne(
+        "SELECT id, attempts FROM rate_limits
+          WHERE identifier = :id AND action = :action AND window_start >= :ws
+          LIMIT 1",
+        [':id' => $identifier, ':action' => $action, ':ws' => $windowStart]
+    );
+
+    if ($row === false) {
+        // Tabela não existe ainda — fail-open para não bloquear o sistema
+        return true;
+    }
+
+    if (!$row) {
+        // Primeira tentativa na janela atual
+        $db->execute(
+            "INSERT INTO rate_limits (identifier, action, attempts, window_start) VALUES (:id, :action, 1, NOW())",
+            [':id' => $identifier, ':action' => $action]
+        );
+        // Limpar registros antigos periodicamente (1% das requisições)
+        if (rand(1, 100) === 1) {
+            $db->execute("DELETE FROM rate_limits WHERE window_start < :ws", [':ws' => $windowStart]);
+        }
+        return true;
+    }
+
+    if ((int)$row['attempts'] >= $maxAttempts) {
+        return false;
+    }
+
+    $db->execute("UPDATE rate_limits SET attempts = attempts + 1 WHERE id = :id", [':id' => $row['id']]);
+    return true;
+}
+
+// Remove entradas de rate limit após autenticação bem-sucedida
+function resetRateLimit(string $identifier, string $action = 'login'): void {
+    $db = Database::getInstance();
+    $db->execute(
+        "DELETE FROM rate_limits WHERE identifier = :id AND action = :action",
+        [':id' => $identifier, ':action' => $action]
+    );
 }

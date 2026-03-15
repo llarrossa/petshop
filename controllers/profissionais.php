@@ -46,12 +46,15 @@ switch ($action) {
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             validateCsrfToken();
+            $tipo_comissao = sanitize($_POST['tipo_comissao'] ?? 'percentual');
+            $comissao = max(0, (float)($_POST['comissao'] ?? 0));
+            if ($tipo_comissao === 'percentual') $comissao = min(100, $comissao);
             $profissional->nome          = sanitize($_POST['nome']);
             $profissional->funcao        = sanitize($_POST['funcao'] ?? '');
             $profissional->telefone      = sanitize($_POST['telefone'] ?? '');
             $profissional->email         = sanitize($_POST['email'] ?? '');
-            $profissional->comissao      = (float)($_POST['comissao'] ?? 0);
-            $profissional->tipo_comissao = sanitize($_POST['tipo_comissao'] ?? 'percentual');
+            $profissional->comissao      = $comissao;
+            $profissional->tipo_comissao = $tipo_comissao;
             $profissional->status        = 'ativo';
 
             if ($profissional->create()) {
@@ -67,6 +70,7 @@ switch ($action) {
 
     case 'edit':
         $id    = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ' . $back_url); exit; }
         $dados = $profissional->getById($id);
 
         if (!$dados) {
@@ -77,13 +81,16 @@ switch ($action) {
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             validateCsrfToken();
+            $tipo_comissao = sanitize($_POST['tipo_comissao'] ?? 'percentual');
+            $comissao = max(0, (float)($_POST['comissao'] ?? 0));
+            if ($tipo_comissao === 'percentual') $comissao = min(100, $comissao);
             $profissional->id            = $id;
             $profissional->nome          = sanitize($_POST['nome']);
             $profissional->funcao        = sanitize($_POST['funcao'] ?? '');
             $profissional->telefone      = sanitize($_POST['telefone'] ?? '');
             $profissional->email         = sanitize($_POST['email'] ?? '');
-            $profissional->comissao      = (float)($_POST['comissao'] ?? 0);
-            $profissional->tipo_comissao = sanitize($_POST['tipo_comissao'] ?? 'percentual');
+            $profissional->comissao      = $comissao;
+            $profissional->tipo_comissao = $tipo_comissao;
             $profissional->status        = sanitize($_POST['status']);
 
             if ($profissional->update()) {
@@ -99,6 +106,7 @@ switch ($action) {
 
     case 'delete':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ' . $back_url); exit; }
 
         if ($profissional->hasAgendamentosAtivos($id)) {
             $_SESSION['error'] = 'Não é possível excluir este profissional pois ele possui agendamentos ativos ou concluídos vinculados.';

@@ -109,6 +109,15 @@ class Venda {
      * Baixar estoque do produto
      */
     private function baixarEstoque($produto_id, $quantidade) {
+        // Verificar estoque disponível antes de deduzir (previne estoque negativo)
+        $produto = $this->db->queryOne(
+            "SELECT estoque_atual FROM produtos WHERE id = :id AND company_id = :company_id",
+            [':id' => $produto_id, ':company_id' => $this->company_id]
+        );
+        if (!$produto || $produto['estoque_atual'] < $quantidade) {
+            throw new \Exception("Estoque insuficiente para o produto ID {$produto_id}");
+        }
+
         // Atualizar estoque do produto
         $sql = "UPDATE produtos SET estoque_atual = estoque_atual - :quantidade
                 WHERE id = :id AND company_id = :company_id";
@@ -154,6 +163,13 @@ class Venda {
     public function cancelar($venda_id) {
         try {
             $this->db->beginTransaction();
+
+            // Verificar se a venda existe, pertence à empresa e está finalizada (idempotência)
+            $venda = $this->getById($venda_id);
+            if (!$venda || $venda['status'] !== 'finalizada') {
+                $this->db->rollback();
+                return false;
+            }
 
             // Buscar itens da venda para estornar estoque
             $itens = $this->getItens($venda_id);

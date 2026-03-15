@@ -83,12 +83,18 @@ switch ($action) {
                 break;
             }
 
+            if (count($itens) > 50) {
+                $_SESSION['error'] = 'O número máximo de itens por venda é 50.';
+                include __DIR__ . '/../views/vendas/form.php';
+                break;
+            }
+
             $venda->tutor_id = (int)$_POST['tutor_id'] ?: null;
             $venda->pet_id = (int)($_POST['pet_id'] ?? 0) ?: null;
-            $venda->desconto = (float)($_POST['desconto'] ?? 0);
             $venda->forma_pagamento = sanitize($_POST['forma_pagamento']);
             $venda->observacoes = sanitize($_POST['observacoes'] ?? '');
             $venda->valor_total = array_sum(array_column($itens, 'preco_total'));
+            $venda->desconto = max(0, min((float)($_POST['desconto'] ?? 0), $venda->valor_total));
             $venda->valor_final = $venda->valor_total - $venda->desconto;
             $venda->status = 'finalizada';
 
@@ -105,6 +111,7 @@ switch ($action) {
 
     case 'view':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ?page=vendas&action=list'); exit; }
         $dados = $venda->getById($id);
 
         if (!$dados) {
@@ -119,6 +126,7 @@ switch ($action) {
 
     case 'cancelar':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ?page=vendas&action=list'); exit; }
         $return_url = safeReturnUrl($_GET['return_url'] ?? '', '?page=vendas&action=list');
 
         if ($venda->cancelar($id)) {

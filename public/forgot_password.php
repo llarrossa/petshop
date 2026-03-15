@@ -22,6 +22,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = 'Informe um e-mail válido.';
     } else {
+        // Rate limiting: máximo 3 solicitações por IP a cada hora
+        $_rl_key = hash('sha256', ($_SERVER['REMOTE_ADDR'] ?? '0.0.0.0') . ':forgot');
+        if (!checkRateLimit($_rl_key, 'forgot_password', 3, 3600)) {
+            $enviado = true; // Exibe mensagem de sucesso para não revelar o bloqueio
+        } else {
         $db   = Database::getInstance();
         $user = $db->queryOne(
             "SELECT id, nome FROM users WHERE email = :email LIMIT 1",
@@ -71,6 +76,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         $enviado = true;
+        } // end rate limit check
     }
 }
 ?>

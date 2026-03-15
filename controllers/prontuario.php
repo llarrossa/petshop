@@ -75,7 +75,12 @@ switch ($action) {
     case 'create':
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             validateCsrfToken();
-            $prontuarioObj->pet_id          = (int)$_POST['pet_id'];
+            $pet_id_post = (int)$_POST['pet_id'];
+            if ($pet_id_post <= 0) {
+                $_SESSION['error'] = 'Selecione um pet válido.';
+                // fall through to form render
+            } else {
+            $prontuarioObj->pet_id          = $pet_id_post;
             $prontuarioObj->cliente_id      = (int)$_POST['cliente_id'];
             $prontuarioObj->profissional_id = !empty($_POST['profissional_id']) ? (int)$_POST['profissional_id'] : null;
             $prontuarioObj->data_atendimento = sanitize($_POST['data_atendimento']);
@@ -94,6 +99,7 @@ switch ($action) {
             } else {
                 $_SESSION['error'] = 'Erro ao registrar prontuário.';
             }
+            } // end else (pet_id valid)
         }
 
         $dados         = [];
@@ -117,11 +123,16 @@ switch ($action) {
     // --------------------------------------------------------
     case 'edit':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ' . $back_url); exit; }
 
         if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             validateCsrfToken();
+            $pet_id_post = (int)$_POST['pet_id'];
+            if ($pet_id_post <= 0) {
+                $_SESSION['error'] = 'Selecione um pet válido.';
+            } else {
             $prontuarioObj->id              = $id;
-            $prontuarioObj->pet_id          = (int)$_POST['pet_id'];
+            $prontuarioObj->pet_id          = $pet_id_post;
             $prontuarioObj->cliente_id      = (int)$_POST['cliente_id'];
             $prontuarioObj->profissional_id = !empty($_POST['profissional_id']) ? (int)$_POST['profissional_id'] : null;
             $prontuarioObj->data_atendimento = sanitize($_POST['data_atendimento']);
@@ -136,6 +147,7 @@ switch ($action) {
             } else {
                 $_SESSION['error'] = 'Erro ao atualizar prontuário.';
             }
+            } // end else (pet_id valid)
         }
 
         $dados = $prontuarioObj->getById($id);
@@ -160,6 +172,7 @@ switch ($action) {
     // --------------------------------------------------------
     case 'delete':
         $id = (int)$_GET['id'];
+        if ($id <= 0) { header('Location: ' . $back_url); exit; }
 
         if ($prontuarioObj->delete($id)) {
             $_SESSION['success'] = 'Registro excluído com sucesso!';

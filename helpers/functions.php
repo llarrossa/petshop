@@ -193,6 +193,12 @@ function gerarSenhaAleatoria($tamanho = 8) {
  */
 function uploadArquivo($arquivo, $pasta_destino = 'uploads') {
     $extensoes_permitidas = ['jpg', 'jpeg', 'png', 'gif', 'pdf', 'doc', 'docx'];
+    $mimes_permitidos = [
+        'image/jpeg', 'image/png', 'image/gif',
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ];
     $tamanho_maximo = 5 * 1024 * 1024; // 5MB
 
     if (!isset($arquivo['error']) || is_array($arquivo['error'])) {
@@ -211,6 +217,19 @@ function uploadArquivo($arquivo, $pasta_destino = 'uploads') {
 
     if (!in_array($extensao, $extensoes_permitidas)) {
         return ['success' => false, 'message' => 'Tipo de arquivo não permitido'];
+    }
+
+    // Validar MIME type real do arquivo (previne upload disfarçado)
+    $finfo = new finfo(FILEINFO_MIME_TYPE);
+    $mime  = $finfo->file($arquivo['tmp_name']);
+    if (!in_array($mime, $mimes_permitidos)) {
+        return ['success' => false, 'message' => 'Tipo de arquivo não permitido'];
+    }
+
+    // Sanitizar pasta de destino (previne path traversal)
+    $pasta_destino = preg_replace('/[^a-zA-Z0-9_\-]/', '', $pasta_destino);
+    if (empty($pasta_destino)) {
+        $pasta_destino = 'uploads';
     }
 
     $nome_arquivo = uniqid() . '.' . $extensao;
