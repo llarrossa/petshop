@@ -7,6 +7,7 @@
 require_once __DIR__ . '/../config/config.php';
 require_once __DIR__ . '/../database/connection.php';
 require_once __DIR__ . '/../helpers/functions.php';
+require_once __DIR__ . '/../classes/NotaFiscal.class.php';
 verificarLogin();
 
 $db        = Database::getInstance();
@@ -107,6 +108,44 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $tab = 'senha';
     }
 }
+
+// --- Salvar configurações fiscais ---
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['acao'] ?? '') === 'fiscal') {
+    $nfObj = new NotaFiscal();
+    $dados_fiscal = [
+        'cnpj'                        => sanitize($_POST['cnpj']                        ?? ''),
+        'razao_social'                => sanitize($_POST['razao_social']                ?? ''),
+        'inscricao_municipal'         => sanitize($_POST['inscricao_municipal']         ?? ''),
+        'logradouro'                  => sanitize($_POST['logradouro']                  ?? ''),
+        'numero_endereco'             => sanitize($_POST['numero_endereco']             ?? ''),
+        'complemento'                 => sanitize($_POST['complemento']                 ?? ''),
+        'bairro'                      => sanitize($_POST['bairro']                      ?? ''),
+        'codigo_municipio'            => sanitize($_POST['codigo_municipio']            ?? ''),
+        'municipio'                   => sanitize($_POST['municipio']                   ?? ''),
+        'uf'                          => sanitize($_POST['uf']                          ?? ''),
+        'cep'                         => sanitize($_POST['cep']                         ?? ''),
+        'codigo_servico'              => sanitize($_POST['codigo_servico']              ?? ''),
+        'codigo_tributario_municipio' => sanitize($_POST['codigo_tributario_municipio'] ?? ''),
+        'aliquota_iss'                => (float)str_replace(',', '.', $_POST['aliquota_iss'] ?? '0.05'),
+        'nfse_api_token'              => sanitize($_POST['nfse_api_token']              ?? ''),
+        'nfse_ambiente'               => in_array($_POST['nfse_ambiente'] ?? '', ['homologacao','producao'])
+                                            ? $_POST['nfse_ambiente'] : 'homologacao',
+        'nfse_provedor'               => sanitize($_POST['nfse_provedor'] ?? 'focusnfe'),
+    ];
+
+    if ($nfObj->salvarConfigFiscal($dados_fiscal)) {
+        $_SESSION['success'] = 'Dados fiscais salvos com sucesso.';
+        header('Location: ?page=conta&tab=fiscal');
+        exit;
+    } else {
+        $errors[] = 'Erro ao salvar dados fiscais.';
+        $tab = 'fiscal';
+    }
+}
+
+// Carregar config fiscal para a view
+$nfObj        = new NotaFiscal();
+$config_fiscal = $nfObj->getConfigFiscal();
 
 $page_title = 'Minha Conta';
 ob_start();

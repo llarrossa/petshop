@@ -66,6 +66,7 @@ $controllers = [
     'financeiro'    => __DIR__ . '/controllers/financeiro.php',
     'relatorios'    => __DIR__ . '/controllers/relatorios.php',
     'prontuario'    => __DIR__ . '/controllers/prontuario.php',
+    'notas_fiscais' => __DIR__ . '/controllers/notas_fiscais.php',
     'conta'         => __DIR__ . '/controllers/conta.php',
 ];
 

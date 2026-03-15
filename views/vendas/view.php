@@ -10,6 +10,14 @@ ob_start();
         $return_url = htmlspecialchars($_GET['return_url'] ?? '?page=vendas&action=list');
         $return_url_enc = urlencode($_GET['return_url'] ?? '?page=vendas&action=list');
         ?>
+        <?php if ($dados['status'] == 'finalizada' && moduloDisponivel('nota_fiscal')): ?>
+            <?php if (empty($dados['tem_nota_fiscal'])): ?>
+            <a href="?page=notas_fiscais&action=emitir&venda_id=<?= $dados['id'] ?>"
+               class="btn btn-primary">🧾 Emitir Nota Fiscal</a>
+            <?php else: ?>
+            <span class="badge badge-success" style="padding:8px 14px;font-size:.85em;">✅ NF Emitida</span>
+            <?php endif; ?>
+        <?php endif; ?>
         <?php if ($dados['status'] == 'finalizada'): ?>
         <a href="?page=vendas&action=cancelar&id=<?= $dados['id'] ?>&return_url=<?= $return_url_enc ?>" class="btn btn-danger" onclick="return confirm('Cancelar esta venda? O estoque será revertido.')">✖️ Cancelar Venda</a>
         <?php endif; ?>

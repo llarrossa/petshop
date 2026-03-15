@@ -74,15 +74,15 @@ define('ITEMS_PER_PAGE', 20);
 define('PLANOS', [
     'banho_tosa' => [
         'nome' => 'Banho & Tosa',
-        'modulos' => ['agenda', 'clientes', 'pets', 'servicos', 'profissionais', 'prontuario', 'dashboard']
+        'modulos' => ['agenda', 'clientes', 'pets', 'servicos', 'profissionais', 'prontuario', 'nota_fiscal', 'dashboard']
     ],
     'loja' => [
         'nome' => 'Pet Shop',
-        'modulos' => ['produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'dashboard']
+        'modulos' => ['produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'nota_fiscal', 'dashboard']
     ],
     'completo' => [
         'nome' => 'Completo',
-        'modulos' => ['agenda', 'clientes', 'pets', 'servicos', 'profissionais', 'produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'prontuario', 'dashboard']
+        'modulos' => ['agenda', 'clientes', 'pets', 'servicos', 'profissionais', 'produtos', 'vendas', 'estoque', 'financeiro', 'relatorios', 'prontuario', 'nota_fiscal', 'dashboard']
     ]
 ]);
 

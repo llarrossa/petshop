@@ -62,6 +62,10 @@
                     <li><a href="?page=prontuario"><span>📋</span> Prontuário</a></li>
                     <?php endif; ?>
 
+                    <?php if (moduloDisponivel('nota_fiscal')): ?>
+                    <li><a href="?page=notas_fiscais"><span>🧾</span> Notas Fiscais</a></li>
+                    <?php endif; ?>
+
                     <?php if (moduloDisponivel('relatorios')): ?>
                     <li><a href="?page=relatorios"><span>📈</span> Relatórios</a></li>
                     <?php endif; ?>

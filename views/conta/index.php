@@ -1,7 +1,7 @@
 <?php
 /**
  * View: Minha Conta
- * Abas: Perfil (nome/e-mail) e Senha
+ * Abas: Perfil, Senha e Dados Fiscais
  */
 ?>
 
@@ -22,13 +22,13 @@
 <!-- Tabs -->
 <div class="tabs" style="margin-bottom:24px;">
     <a href="?page=conta&tab=perfil"
-       class="tab-link <?= $tab === 'perfil' ? 'active' : '' ?>">
-        Perfil
-    </a>
+       class="tab-link <?= $tab === 'perfil' ? 'active' : '' ?>">Perfil</a>
     <a href="?page=conta&tab=senha"
-       class="tab-link <?= $tab === 'senha' ? 'active' : '' ?>">
-        Alterar Senha
-    </a>
+       class="tab-link <?= $tab === 'senha'  ? 'active' : '' ?>">Alterar Senha</a>
+    <?php if (moduloDisponivel('nota_fiscal')): ?>
+    <a href="?page=conta&tab=fiscal"
+       class="tab-link <?= $tab === 'fiscal' ? 'active' : '' ?>">🧾 Dados Fiscais</a>
+    <?php endif; ?>
 </div>
 
 <!-- Tab: Perfil -->
@@ -74,7 +74,7 @@
 </div>
 
 <!-- Tab: Senha -->
-<?php else: ?>
+<?php elseif ($tab === 'senha'): ?>
 <div class="card">
     <div class="card-body">
         <form method="POST" class="form">
@@ -101,6 +101,153 @@
 
             <div class="form-actions">
                 <button type="submit" class="btn btn-primary">Alterar senha</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Tab: Dados Fiscais -->
+<?php elseif ($tab === 'fiscal' && moduloDisponivel('nota_fiscal')): ?>
+<div class="card">
+    <div class="card-header">
+        <h3>🧾 Configurações Fiscais — NFS-e</h3>
+    </div>
+    <div class="card-body">
+        <p class="text-muted" style="margin-bottom:20px;font-size:.88rem;">
+            Preencha os dados do prestador de serviços (seu pet shop) utilizados na emissão das Notas Fiscais de Serviço eletrônicas.
+            O token da API é obtido diretamente no painel do provedor NFS-e (ex: Focus NFe).
+        </p>
+        <form method="POST" class="form">
+            <input type="hidden" name="acao" value="fiscal">
+
+            <h4 style="margin-bottom:12px;font-size:15px;color:#374151;">Dados do Prestador</h4>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="cnpj">CNPJ *</label>
+                    <input type="text" id="cnpj" name="cnpj" class="form-control"
+                           placeholder="00.000.000/0001-00"
+                           value="<?= htmlspecialchars($config_fiscal['cnpj'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-8">
+                    <label for="razao_social">Razão Social *</label>
+                    <input type="text" id="razao_social" name="razao_social" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['razao_social'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="inscricao_municipal">Inscrição Municipal *</label>
+                    <input type="text" id="inscricao_municipal" name="inscricao_municipal" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['inscricao_municipal'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="codigo_municipio">Código IBGE do Município *</label>
+                    <input type="text" id="codigo_municipio" name="codigo_municipio" class="form-control"
+                           placeholder="Ex: 4119905 (Paranaguá/PR)"
+                           value="<?= htmlspecialchars($config_fiscal['codigo_municipio'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="municipio">Município</label>
+                    <input type="text" id="municipio" name="municipio" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['municipio'] ?? '') ?>">
+                </div>
+            </div>
+
+            <div class="form-row">
+                <div class="form-group col-md-6">
+                    <label for="logradouro">Logradouro</label>
+                    <input type="text" id="logradouro" name="logradouro" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['logradouro'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="numero_endereco">Número</label>
+                    <input type="text" id="numero_endereco" name="numero_endereco" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['numero_endereco'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-2">
+                    <label for="bairro">Bairro</label>
+                    <input type="text" id="bairro" name="bairro" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['bairro'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-1">
+                    <label for="uf">UF</label>
+                    <input type="text" id="uf" name="uf" class="form-control" maxlength="2"
+                           value="<?= htmlspecialchars($config_fiscal['uf'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-1">
+                    <label for="cep">CEP</label>
+                    <input type="text" id="cep" name="cep" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['cep'] ?? '') ?>">
+                </div>
+            </div>
+
+            <h4 style="margin:20px 0 12px;font-size:15px;color:#374151;">Configuração Tributária</h4>
+            <div class="form-row">
+                <div class="form-group col-md-3">
+                    <label for="codigo_servico">
+                        Cód. Serviço (LC 116) *
+                        <small class="text-muted" style="font-size:.75em;display:block;">Ex: 14.01 — Lubrificação, limpeza...</small>
+                    </label>
+                    <input type="text" id="codigo_servico" name="codigo_servico" class="form-control"
+                           placeholder="14.01"
+                           value="<?= htmlspecialchars($config_fiscal['codigo_servico'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="codigo_tributario_municipio">Cód. Tributário Municipal</label>
+                    <input type="text" id="codigo_tributario_municipio" name="codigo_tributario_municipio" class="form-control"
+                           value="<?= htmlspecialchars($config_fiscal['codigo_tributario_municipio'] ?? '') ?>">
+                </div>
+                <div class="form-group col-md-3">
+                    <label for="aliquota_iss">Alíquota ISS (%)</label>
+                    <input type="number" id="aliquota_iss" name="aliquota_iss" class="form-control"
+                           step="0.01" min="0" max="5"
+                           placeholder="5.00"
+                           value="<?= number_format(($config_fiscal['aliquota_iss'] ?? 0.05) * 100, 2, '.', '') ?>">
+                    <small class="text-muted">Digite 5 para 5%</small>
+                </div>
+            </div>
+
+            <h4 style="margin:20px 0 12px;font-size:15px;color:#374151;">Integração com Provedor NFS-e</h4>
+            <div class="form-row">
+                <div class="form-group col-md-4">
+                    <label for="nfse_provedor">Provedor</label>
+                    <select id="nfse_provedor" name="nfse_provedor" class="form-control">
+                        <option value="focusnfe" <?= ($config_fiscal['nfse_provedor'] ?? 'focusnfe') === 'focusnfe' ? 'selected' : '' ?>>
+                            Focus NFe
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group col-md-4">
+                    <label for="nfse_ambiente">Ambiente</label>
+                    <select id="nfse_ambiente" name="nfse_ambiente" class="form-control">
+                        <option value="homologacao" <?= ($config_fiscal['nfse_ambiente'] ?? 'homologacao') === 'homologacao' ? 'selected' : '' ?>>
+                            Homologação (testes)
+                        </option>
+                        <option value="producao"    <?= ($config_fiscal['nfse_ambiente'] ?? '') === 'producao' ? 'selected' : '' ?>>
+                            Produção
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="nfse_api_token">Token da API *</label>
+                <input type="text" id="nfse_api_token" name="nfse_api_token" class="form-control"
+                       placeholder="Token gerado no painel do provedor NFS-e"
+                       value="<?= htmlspecialchars($config_fiscal['nfse_api_token'] ?? '') ?>"
+                       autocomplete="off">
+                <small class="text-muted">
+                    Obtenha o token no painel da
+                    <a href="https://focusnfe.com.br" target="_blank" rel="noopener">Focus NFe</a>.
+                    Cada empresa possui seu próprio token.
+                </small>
+            </div>
+
+            <div class="form-actions">
+                <button type="submit" class="btn btn-primary">💾 Salvar Dados Fiscais</button>
+                <?php if (!empty($config_fiscal['nfse_api_token'])): ?>
+                <a href="?page=notas_fiscais&action=list" class="btn btn-secondary">Ver Notas Fiscais</a>
+                <?php endif; ?>
             </div>
         </form>
     </div>
